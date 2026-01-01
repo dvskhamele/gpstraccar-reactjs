@@ -1,0 +1,18 @@
+{
+    "sourceFile": "index.html",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1765448785551,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1765448785551,
+            "name": "Commit-0",
+            "content": "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n  <head>\r\n    <meta charset=\"utf-8\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\r\n    <meta name=\"theme-color\" content=\"${colorPrimary}\" />\r\n    <meta name=\"description\" content=\"${description}\" />\r\n    <link rel=\"icon\" href=\"/favicon.ico\" />\r\n    <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon-180x180.png\" sizes=\"180x180\" />\r\n    <link rel=\"manifest\" href=\"/manifest.webmanifest\" />\r\n    <link rel=\"stylesheet\" href=\"/styles.css\">\r\n    <title>Trac</title>\r\n    <style>\r\n      .loader {\r\n        position: fixed; top: calc(50% - 25px); left: calc(50% - 25px);\r\n        width: 50px; aspect-ratio: 1; box-sizing: content-box; animation: ll 1s infinite linear;\r\n        border-radius: 50%; border: 8px solid lightgray; border-right-color: black;\r\n      }\r\n      @keyframes ll {to{transform: rotate(1turn)}}\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <noscript>Enable JavaScript to use <a href=\"https://www.traccar.org/\">Traccar GPS Tracking System</a>.</noscript>\r\n    <div id=\"root\" class=\"root\"></div>\r\n    <div class=\"loader\"></div>\r\n    <script type=\"module\" src=\"/src/index.jsx\" onerror=\"alert('Loading error.')\"></script>\r\n  </body>\r\n</html>\r\n"
+        }
+    ]
+}
