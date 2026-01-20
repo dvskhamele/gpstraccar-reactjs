@@ -1,4 +1,6 @@
-import { useMediaQuery, Paper } from '@mui/material';
+import {
+  useMediaQuery, Paper, Typography, Box,
+} from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useTheme } from '@mui/material/styles';
 import LogoImage from './LogoImage';
@@ -10,6 +12,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   sidebar: {
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     background: theme.palette.sidebar.background,
@@ -21,6 +24,12 @@ const useStyles = makeStyles()((theme) => ({
     [theme.breakpoints.down('sm')]: {
       width: '0px',
     },
+  },
+  customerCare: {
+    marginTop: theme.spacing(3),
+    color: theme.palette.sidebar.text,
+    textAlign: 'center',
+    padding: theme.spacing(0, 2),
   },
   paper: {
     display: 'flex',
@@ -54,7 +63,19 @@ const LoginLayout = ({ children }) => {
   return (
     <main className={classes.root}>
       <div className={classes.sidebar}>
-        {!useMediaQuery(theme.breakpoints.down('lg')) && <LogoImage />}
+        {!useMediaQuery(theme.breakpoints.down('lg')) && (
+          <>
+            <LogoImage />
+            <Box className={classes.customerCare}>
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                Customer Care
+              </Typography>
+              <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                +91 6393585583
+              </Typography>
+            </Box>
+          </>
+        )}
       </div>
       <div className={classes.paper}>
         <form className={classes.form}>
