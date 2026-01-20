@@ -29,6 +29,7 @@ const useStyles = makeStyles()((theme) => ({
     alignItems: 'center',
     flex: 1,
     background: theme.palette.background.default,
+    padding: theme.spacing(2),
     [theme.breakpoints.up('lg')]: {
       padding: theme.spacing(0, 25, 0, 0),
     },
@@ -40,6 +41,9 @@ const useStyles = makeStyles()((theme) => ({
     backgroundColor: theme.palette.background.paper,
     borderRadius: 24,
     boxShadow: '0px 10px 40px rgba(0, 0, 0, 0.08)',
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(3),
+    },
   },
 }));
 
