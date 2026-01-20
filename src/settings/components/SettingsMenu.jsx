@@ -1,5 +1,5 @@
 import {
-  Divider, List,
+  Divider, List, ListItem, ListItemText, Typography,
 } from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
 import DrawIcon from '@mui/icons-material/Draw';
@@ -96,14 +96,6 @@ const SettingsMenu = () => {
                 selected={location.pathname.startsWith('/settings/group')}
               />
             )}
-            {!features.disableDrivers && (
-              <MenuItem
-                title={t('sharedDrivers')}
-                link="/settings/drivers"
-                icon={<PersonIcon />}
-                selected={location.pathname.startsWith('/settings/driver')}
-              />
-            )}
             {!features.disableCalendars && (
               <MenuItem
                 title={t('sharedCalendars')}
@@ -111,8 +103,8 @@ const SettingsMenu = () => {
                 icon={<TodayIcon />}
                 selected={location.pathname.startsWith('/settings/calendar')}
               />
-            )}
-            {!features.disableComputedAttributes && (
+            )} */}
+            {admin && !features.disableComputedAttributes && (
               <MenuItem
                 title={t('sharedComputedAttributes')}
                 link="/settings/attributes"
@@ -120,7 +112,7 @@ const SettingsMenu = () => {
                 selected={location.pathname.startsWith('/settings/attribute')}
               />
             )}
-            {!features.disableMaintenance && (
+            {/* {!features.disableMaintenance && (
               <MenuItem
                 title={t('sharedMaintenance')}
                 link="/settings/maintenances"
@@ -128,12 +120,37 @@ const SettingsMenu = () => {
                 selected={location.pathname.startsWith('/settings/maintenance')}
               />
             )} */}
+            {!features.disableDrivers && (
+              <MenuItem
+                title={t('sharedDrivers')}
+                link="/settings/drivers"
+                icon={<PersonIcon />}
+                selected={location.pathname.startsWith('/settings/driver')}
+                disabled
+              />
+            )}
             {!features.disableSavedCommands && (
               <MenuItem
                 title={t('sharedSavedCommands')}
                 link="/settings/commands"
                 icon={<SendIcon />}
                 selected={location.pathname.startsWith('/settings/command')}
+              />
+            )}
+            {(admin || manager) && (
+              <MenuItem
+                title="Recharge History"
+                link="/settings/recharge"
+                icon={<HistoryIcon />}
+                selected={location.pathname === '/settings/recharge'}
+              />
+            )}
+            {!admin && !manager && (
+              <MenuItem
+                title="Recharge Account"
+                link="/settings/recharge-account"
+                icon={<PaymentIcon />}
+                selected={location.pathname === '/settings/recharge-account'}
               />
             )}
             {admin && (
@@ -143,12 +160,6 @@ const SettingsMenu = () => {
                   link="/settings/subscription-plans"
                   icon={<CreditCardIcon />}
                   selected={location.pathname.startsWith('/settings/subscription-plan')}
-                />
-                <MenuItem
-                  title="Recharge History"
-                  link="/settings/recharge"
-                  icon={<HistoryIcon />}
-                  selected={location.pathname === '/settings/recharge'}
                 />
               </>
             )}
@@ -189,6 +200,23 @@ const SettingsMenu = () => {
           </List>
         </>
       )}
+      <List>
+        <Divider />
+        <ListItem>
+          <ListItemText
+            primary={(
+              <Typography variant="subtitle2" align="center" style={{ fontWeight: 600 }}>
+                Customer Care
+              </Typography>
+            )}
+            secondary={(
+              <Typography variant="body2" align="center">
+                +91 6393585583
+              </Typography>
+            )}
+          />
+        </ListItem>
+      </List>
     </>
   );
 };
