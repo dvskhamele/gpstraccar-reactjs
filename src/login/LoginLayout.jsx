@@ -1,9 +1,8 @@
-import {
-  useMediaQuery, Paper, Typography, Box,
-} from '@mui/material';
+import { useMediaQuery, Paper } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useTheme } from '@mui/material/styles';
 import LogoImage from './LogoImage';
+import newLoginBg from '../resources/images/newloginbg.png';
 
 const useStyles = makeStyles()((theme) => ({
   root: {
@@ -12,7 +11,6 @@ const useStyles = makeStyles()((theme) => ({
   },
   sidebar: {
     display: 'flex',
-    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     background: theme.palette.sidebar.background,
@@ -25,12 +23,6 @@ const useStyles = makeStyles()((theme) => ({
       width: '0px',
     },
   },
-  customerCare: {
-    marginTop: theme.spacing(3),
-    color: theme.palette.sidebar.text,
-    textAlign: 'center',
-    padding: theme.spacing(0, 2),
-  },
   paper: {
     display: 'flex',
     flexDirection: 'column',
@@ -41,6 +33,12 @@ const useStyles = makeStyles()((theme) => ({
     padding: theme.spacing(2),
     [theme.breakpoints.up('lg')]: {
       padding: theme.spacing(0, 25, 0, 0),
+    },
+    [theme.breakpoints.down('lg')]: {
+      backgroundImage: `url(${newLoginBg})`,
+      backgroundSize: '100% auto',
+      backgroundPosition: 'top left',
+      backgroundRepeat: 'no-repeat',
     },
   },
   form: {
@@ -63,19 +61,7 @@ const LoginLayout = ({ children }) => {
   return (
     <main className={classes.root}>
       <div className={classes.sidebar}>
-        {!useMediaQuery(theme.breakpoints.down('lg')) && (
-          <>
-            <LogoImage />
-            <Box className={classes.customerCare}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
-                Customer Care
-              </Typography>
-              <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                +91 6393585583
-              </Typography>
-            </Box>
-          </>
-        )}
+        {!useMediaQuery(theme.breakpoints.down('lg')) && <LogoImage />}
       </div>
       <div className={classes.paper}>
         <form className={classes.form}>

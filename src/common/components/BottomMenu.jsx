@@ -15,6 +15,7 @@ import { sessionActions } from '../../store';
 import { useTranslation } from './LocalizationProvider';
 import { useRestriction } from '../util/permissions';
 import { nativePostMessage } from './NativeInterface';
+import { showLoader } from '../util/loader';
 
 const BottomMenu = () => {
   const navigate = useNavigate();
@@ -50,6 +51,10 @@ const BottomMenu = () => {
 
   const handleLogout = async () => {
     setAnchorEl(null);
+    showLoader();
+
+    dispatch(sessionActions.updateUser(null));
+    navigate('/login');
 
     const notificationToken = window.localStorage.getItem('notificationToken');
     if (notificationToken && !user.readonly) {
@@ -73,8 +78,6 @@ const BottomMenu = () => {
 
     await fetch('/api/session', { method: 'DELETE' });
     nativePostMessage('logout');
-    navigate('/login');
-    dispatch(sessionActions.updateUser(null));
   };
 
   const handleSelection = (event, value) => {
@@ -93,7 +96,7 @@ const BottomMenu = () => {
         if (user.administrator || user.userLimit > 0) {
           navigate('/settings/users');
         } else {
-          navigate('/settings/preferences?menu=true');
+          navigate('/settings/devices');
         }
         break;
       case 'account':

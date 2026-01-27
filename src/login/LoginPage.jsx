@@ -23,6 +23,7 @@ import LogoImage from './LogoImage';
 import { useCatch } from '../reactHelper';
 import QrCodeDialog from '../common/components/QrCodeDialog';
 import fetchOrThrow from '../common/util/fetchOrThrow';
+import { hideLoader } from '../common/util/loader';
 
 const useStyles = makeStyles()((theme) => ({
   options: {
@@ -137,6 +138,7 @@ const LoginPage = () => {
       window.localStorage.setItem('hostname', window.location.hostname);
       setShowServerTooltip(true);
     }
+    hideLoader();
   }, []);
 
   return (
@@ -174,9 +176,9 @@ const LoginPage = () => {
         )}
       </div>
       <div className={classes.container}>
-        {useMediaQuery(theme.breakpoints.down('lg')) && <LogoImage color={theme.palette.primary.main} />}
+        {!useMediaQuery(theme.breakpoints.down('lg')) && <LogoImage color={theme.palette.primary.main} />}
         
-        <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 700, mb: 1, color: theme.palette.text.primary }}>
+        <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 700, mb: 1, color: theme.palette.primary.main }}>
           {t('loginLogin')}
         </Typography>
         <Typography variant="body2" sx={{ textAlign: 'center', mb: 3, color: theme.palette.text.secondary }}>
@@ -279,6 +281,11 @@ const LoginPage = () => {
             )}
           </div>
         )}
+        <Box mt={4} textAlign="center">
+          <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, fontWeight: 500 }}>
+            Proudly Made in India <span style={{ color: '#e91e63' }}>❤️</span>
+          </Typography>
+        </Box>
       </div>
       <QrCodeDialog open={showQr} onClose={() => setShowQr(false)} />
       <Snackbar
