@@ -9,11 +9,11 @@ export default (server, darkMode) => ({
     paper: darkMode ? '#111827' : '#ffffff',
   },
   primary: {
-    main: validatedColor(server?.attributes?.colorPrimary) || (darkMode ? '#6366f1' : '#4f46e5'), // Indigo 500/600
+    main: validatedColor(server?.attributes?.colorPrimary) || '#E8202E',
     contrastText: '#ffffff',
   },
   secondary: {
-    main: validatedColor(server?.attributes?.colorSecondary) || (darkMode ? '#10b981' : '#059669'), // Emerald 500/600
+    main: validatedColor(server?.attributes?.colorSecondary) || '#F87321',
     contrastText: '#ffffff',
   },
   neutral: {
@@ -26,15 +26,15 @@ export default (server, darkMode) => ({
     main: grey[900],
   },
   sidebar: {
-    main: '#312e81',
-    background: 'linear-gradient(to bottom, #4f46e5 0%, #4f46e5 50%, #4CB8D4 100%)', // Indigo Dominant -> Sky Blue
-    text: '#e2e8f0',
-    active: 'rgba(255, 255, 255, 0.12)',
-    hover: 'rgba(255, 255, 255, 0.08)',
-    activeText: '#ffffff',
+    main: '#ffffff',
+    background: '#ffffff',
+    text: '#424242',
+    active: 'rgba(0, 0, 0, 0.08)',
+    hover: 'rgba(0, 0, 0, 0.04)',
+    activeText: '#424242',
   },
   gradients: {
-    primary: 'linear-gradient(to right, #4f46e5, #6366f1)',
-    secondary: 'linear-gradient(to right, #059669, #10b981)',
+    primary: 'linear-gradient(to right, #E8202E, #F87321)',
+    secondary: 'linear-gradient(to right, #E8202E, #F87321)',
   }
 });

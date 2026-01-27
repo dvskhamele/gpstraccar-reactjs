@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import VpnLockIcon from '@mui/icons-material/VpnLock';
 import { makeStyles } from 'tss-react/mui';
@@ -15,7 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import Loader from '../common/components/Loader';
+import { showLoader, hideLoader } from '../common/util/loader';
 import { errorsActions } from '../store';
 
 const currentServer = `${window.location.protocol}//${window.location.host}`;
@@ -103,8 +103,16 @@ const ChangeServerPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (loading) {
+      showLoader();
+    } else {
+      hideLoader();
+    }
+  }, [loading]);
+
   if (loading) {
-    return <Loader />;
+    return null;
   }
 
   return (

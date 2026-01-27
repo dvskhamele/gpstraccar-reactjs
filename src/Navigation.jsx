@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   Route, Routes,
   useSearchParams, Navigate,
@@ -56,7 +57,7 @@ import LogsPage from './reports/LogsPage';
 import SharePage from './settings/SharePage';
 import AnnouncementPage from './settings/AnnouncementPage';
 import EmulatorPage from './other/EmulatorPage';
-import Loader from './common/components/Loader';
+import { showLoader, hideLoader } from './common/util/loader';
 import { generateLoginToken } from './common/components/NativeInterface';
 import { useLocalization } from './common/components/LocalizationProvider';
 import fetchOrThrow from './common/util/fetchOrThrow';
@@ -72,6 +73,14 @@ const Navigation = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const hasQueryParams = ['locale', 'token', 'uniqueId', 'openid'].some(key => searchParams.has(key));
+
+  useEffect(() => {
+    if (hasQueryParams) {
+      showLoader();
+    } else {
+      hideLoader();
+    }
+  }, [hasQueryParams]);
 
   useEffectAsync(async () => {
     if (!hasQueryParams) {
@@ -111,7 +120,7 @@ const Navigation = () => {
   }, [hasQueryParams, searchParams, setSearchParams]);
 
   if (hasQueryParams) {
-    return (<Loader />);
+    return null;
   }
   return (
     <Routes>
@@ -178,7 +187,7 @@ const Navigation = () => {
         <Route path="reports">
           <Route path="combined" element={<CombinedReportPage />} />
           <Route path="chart" element={<ChartReportPage />} />
-          <Route path="events" element={<EventReportPage />} />
+          <Route path="events" an_element={<EventReportPage />} />
           <Route path="route" element={<PositionsReportPage />} />
           <Route path="stops" element={<StopReportPage />} />
           <Route path="summary" element={<SummaryReportPage />} />

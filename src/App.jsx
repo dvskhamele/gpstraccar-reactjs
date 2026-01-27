@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery, useTheme } from '@mui/material';
@@ -9,7 +10,7 @@ import { useCatch, useEffectAsync } from './reactHelper';
 import { sessionActions } from './store';
 import UpdateController from './UpdateController';
 import TermsDialog from './common/components/TermsDialog';
-import Loader from './common/components/Loader';
+import { showLoader, hideLoader } from './common/util/loader';
 import fetchOrThrow from './common/util/fetchOrThrow';
 
 const useStyles = makeStyles()(() => ({
@@ -47,6 +48,14 @@ const App = () => {
     dispatch(sessionActions.updateUser(await response.json()));
   });
 
+  useEffect(() => {
+    if (user) {
+      hideLoader();
+    } else {
+      showLoader();
+    }
+  }, [user]);
+
   useEffectAsync(async () => {
     if (!user) {
       const response = await fetch('/api/session');
@@ -61,7 +70,7 @@ const App = () => {
   }, []);
 
   if (user == null) {
-    return (<Loader />);
+    return null;
   }
   if (termsUrl && !user.attributes.termsAccepted) {
     return (

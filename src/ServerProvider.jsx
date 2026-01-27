@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Alert, IconButton } from '@mui/material';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffectAsync } from './reactHelper';
 import { sessionActions } from './store';
-import Loader from './common/components/Loader';
+import { showLoader, hideLoader } from './common/util/loader';
 
 const ServerProvider = ({
   children,
@@ -13,6 +13,14 @@ const ServerProvider = ({
 
   const initialized = useSelector((state) => !!state.session.server);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (initialized) {
+      hideLoader();
+    } else {
+      showLoader();
+    }
+  }, [initialized]);
 
   useEffectAsync(async () => {
     if (!error) {
@@ -45,7 +53,7 @@ const ServerProvider = ({
     );
   }
   if (!initialized) {
-    return (<Loader />);
+    return null;
   }
   return children;
 };
