@@ -218,16 +218,18 @@ const UserRow = ({ item, manager, actionLogin, actionConnections, setTimestamp }
                          </Typography>
                          <Chip label={`${devices?.length || 0} Vehicles`} size="small" color="primary" variant="outlined" sx={{ height: 20, fontSize: '0.7rem' }} />
                        </Box>
-                       <Button 
-                         startIcon={<AddIcon />} 
-                         size="small" 
-                         variant="contained" 
-                         color="primary"
-                         onClick={handleOpenAddDevice}
-                         sx={{ textTransform: 'none', height: 28 }}
-                       >
-                         Add Device
-                       </Button>
+                       {manager && (
+                         <Button 
+                           startIcon={<AddIcon />} 
+                           size="small" 
+                           variant="contained" 
+                           color="primary"
+                           onClick={handleOpenAddDevice}
+                           sx={{ textTransform: 'none', height: 28 }}
+                         >
+                           Add Device
+                         </Button>
+                       )}
                     </Box>
                     {devices && devices.length > 0 ? (
                       <Table size="small" aria-label="devices">

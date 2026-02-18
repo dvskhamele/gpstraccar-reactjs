@@ -56,16 +56,21 @@ const SubscriptionPlanPage = () => {
       name: item.name,
       duration_days: item.duration_days,
       price: item.price_value,
-      active: item.active // Use active from frontend state
+      active: item.active, // Use active from frontend state
     };
 
-    await fetchOrThrow(url, {
-      method: !id ? 'POST' : 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-    });
-
-    navigate('/settings/subscription-plans');
+    try {
+      await fetchOrThrow(url, {
+        method: !id ? 'POST' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      });
+      navigate('/settings/subscription-plans');
+    } catch (error) {
+      
+        throw error;
+      
+    }
   });
 
   const validate = () => item && item.name && item.duration_days && item.price_value !== undefined;

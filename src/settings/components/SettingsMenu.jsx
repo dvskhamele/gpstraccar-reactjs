@@ -88,7 +88,7 @@ const SettingsMenu = () => {
               icon={<DrawIcon />}
               selected={location.pathname.startsWith('/settings/geofence') || location.pathname === '/geofences'}
             />
-            {/* {!features.disableGroups && (
+            {!features.disableGroups && (
               <MenuItem
                 title={t('settingsGroups')}
                 link="/settings/groups"
@@ -103,7 +103,7 @@ const SettingsMenu = () => {
                 icon={<TodayIcon />}
                 selected={location.pathname.startsWith('/settings/calendar')}
               />
-            )} */}
+            )}
             {admin && !features.disableComputedAttributes && (
               <MenuItem
                 title={t('sharedComputedAttributes')}
@@ -112,21 +112,20 @@ const SettingsMenu = () => {
                 selected={location.pathname.startsWith('/settings/attribute')}
               />
             )}
-            {/* {!features.disableMaintenance && (
+            {!features.disableMaintenance && (
               <MenuItem
                 title={t('sharedMaintenance')}
                 link="/settings/maintenances"
                 icon={<BuildIcon />}
                 selected={location.pathname.startsWith('/settings/maintenance')}
               />
-            )} */}
+            )}
             {!features.disableDrivers && (
               <MenuItem
                 title={t('sharedDrivers')}
                 link="/settings/drivers"
                 icon={<PersonIcon />}
                 selected={location.pathname.startsWith('/settings/driver')}
-                disabled
               />
             )}
             {!features.disableSavedCommands && (
@@ -137,7 +136,7 @@ const SettingsMenu = () => {
                 selected={location.pathname.startsWith('/settings/command')}
               />
             )}
-            {(admin || manager) && (
+            {admin && (
               <MenuItem
                 title="Recharge History"
                 link="/settings/recharge"

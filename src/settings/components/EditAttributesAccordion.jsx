@@ -27,7 +27,9 @@ import {
 import useFeatures from '../../common/util/useFeatures';
 import useSettingsStyles from '../common/useSettingsStyles';
 
-const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definitions, focusAttribute }) => {
+const EditAttributesAccordion = ({
+  attribute, attributes, setAttributes, definitions, focusAttribute, exclude = [],
+}) => {
   const { classes } = useSettingsStyles();
   const t = useTranslation();
 
@@ -112,7 +114,7 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
   const convertToList = (attributes) => {
     const booleanList = [];
     const otherList = [];
-    const excludeAttributes = ['speedUnit', 'distanceUnit', 'altitudeUnit', 'volumeUnit', 'timezone'];
+    const excludeAttributes = ['speedUnit', 'distanceUnit', 'altitudeUnit', 'volumeUnit', 'timezone', ...exclude];
     Object.keys(attributes || []).filter((key) => !excludeAttributes.includes(key)).forEach((key) => {
       const value = attributes[key];
       const type = getAttributeType(value);

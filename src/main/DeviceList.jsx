@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { makeStyles } from 'tss-react/mui';
 import { List } from 'react-window';
-import { devicesActions } from '../store';
-import { useEffectAsync } from '../reactHelper';
 import DeviceRow from './DeviceRow';
-import fetchOrThrow from '../common/util/fetchOrThrow';
 
 const useStyles = makeStyles()((theme) => ({
   list: {
@@ -20,7 +16,6 @@ const useStyles = makeStyles()((theme) => ({
 
 const DeviceList = ({ devices }) => {
   const { classes } = useStyles();
-  const dispatch = useDispatch();
 
   const [, setTime] = useState(Date.now());
 
@@ -29,11 +24,6 @@ const DeviceList = ({ devices }) => {
     return () => {
       clearInterval(interval);
     };
-  }, []);
-
-  useEffectAsync(async () => {
-    const response = await fetchOrThrow('/api/devices?all=true');
-    dispatch(devicesActions.refresh(await response.json()));
   }, []);
 
   return (

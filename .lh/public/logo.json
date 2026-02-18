@@ -1,0 +1,18 @@
+{
+    "sourceFile": "public/logo",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1769508111266,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1769508111265,
+            "name": "Commit-0",
+            "content": "<svg width=\"500\" height=\"600\" viewBox=\"0 0 500 600\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\r\n  <defs>\r\n    <linearGradient id=\"bottomGrad\" x1=\"0%\" y1=\"50%\" x2=\"100%\" y2=\"50%\">\r\n      <stop offset=\"0%\" stop-color=\"#F9802D\" />\r\n      <stop offset=\"100%\" stop-color=\"#E12A31\" />\r\n    </linearGradient>\r\n    <linearGradient id=\"topGrad\" x1=\"0%\" y1=\"50%\" x2=\"100%\" y2=\"50%\">\r\n      <stop offset=\"0%\" stop-color=\"#D91E76\" />\r\n      <stop offset=\"100%\" stop-color=\"#5B247A\" />\r\n    </linearGradient>\r\n    <linearGradient id=\"circleGrad\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\r\n      <stop offset=\"0%\" stop-color=\"#46C6F2\" />\r\n      <stop offset=\"100%\" stop-color=\"#008CC9\" />\r\n    </linearGradient>\r\n  </defs>\r\n\r\n  <path d=\"M40 540 L250 220 L460 540 L250 430 Z\" fill=\"url(#bottomGrad)\" stroke-linejoin=\"round\" />\r\n  \r\n  <path d=\"M165 190 L250 25 L335 190 L250 145 Z\" fill=\"url(#topGrad)\" stroke-linejoin=\"round\" />\r\n\r\n  <circle cx=\"250\" cy=\"210\" r=\"28\" fill=\"url(#circleGrad)\" />\r\n</svg>"
+        }
+    ]
+}

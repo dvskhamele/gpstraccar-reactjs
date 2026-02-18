@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import {
   Table, TableRow, TableCell, TableHead, TableBody, Button, TableFooter, FormControlLabel, Switch, Box, FormControl, InputLabel, MenuItem, Select, Chip,
-  useMediaQuery, Card, CardContent, Typography, Grid, Divider, Avatar, TextField, TableContainer,
+  useMediaQuery, Card, CardContent, Typography, Grid, Divider, Avatar, TextField, TableContainer, Collapse, IconButton, InputAdornment,
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import LinkIcon from '@mui/icons-material/Link';
 import SimCardIcon from '@mui/icons-material/SimCard';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import DateRangeIcon from '@mui/icons-material/DateRange';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import CloseIcon from '@mui/icons-material/Close';
 import { useTheme } from '@mui/material/styles';
 import { useEffectAsync } from '../reactHelper';
 import { useTranslation } from '../common/components/LocalizationProvider';
@@ -77,9 +80,11 @@ const DevicesPage = () => {
   const [items, setItems] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [showAll, setShowAll] = usePersistedState('showAllDevices', false);
+  const [showAll, setShowAll] = usePersistedState('showAllDevices_v2', true);
   const [showExpiring, setShowExpiring] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [statsCollapsed, setStatsCollapsed] = useState(false);
+  const lastScrollTop = useRef(0);
 
   useEffectAsync(async () => {
     setLoading(true);
@@ -140,11 +145,39 @@ const DevicesPage = () => {
     handler: (deviceId) => navigate(`/settings/device/${deviceId}/connections`),
   };
 
+  const handleScroll = (e) => {
+    if (isMobile) {
+      const currentScrollTop = e.target.scrollTop;
+      
+      // If scrolling down significantly (away from top), hide stats
+      if (currentScrollTop > 20 && !statsCollapsed) {
+        setStatsCollapsed(true);
+      }
+      // If back at the very top, show stats
+      else if (currentScrollTop < 10 && statsCollapsed) {
+        setStatsCollapsed(false);
+      }
+      
+      lastScrollTop.current = currentScrollTop;
+    }
+  };
+
+  const dashboardStats = (
+    <Box>
+      <Collapse in={!isMobile || !statsCollapsed} timeout={1000}>
+        <Box sx={{ position: 'relative' }}>
+           <DashboardStats />
+        </Box>
+      </Collapse>
+    </Box>
+  );
+
   return (
     <PageLayout
       menu={<SettingsMenu />}
       breadcrumbs={['settingsTitle', 'deviceTitle']}
-      stats={<DashboardStats />}
+      stats={dashboardStats}
+      onScroll={handleScroll}
       toolbar={(
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, alignItems: 'center' }}>
           <TextField
@@ -183,111 +216,133 @@ const DevicesPage = () => {
           {!loading ? items.filter(filterByKeyword(searchKeyword)).filter(filterByDisabledStatus).map((item) => {
             const expStatus = getExpirationStatus(item.expirationTime);
             return (
-            <Card key={item.id} elevation={3} sx={{ borderRadius: 3, overflow: 'visible' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                      <img
-                                                            src={getDeviceIconUrl(item.category)}
-                                                            alt={item.category}
-                                                            style={{
-                                                              width: 80,
-                                                              height: 80,
-                                                              objectFit: 'contain',
-                                                              filter: isPngIcon(item.category) ? undefined : 'brightness(0)',
-                                                            }}
-                                                          />                                      <Box>
-                      <Typography variant="h6" fontWeight="bold" sx={{ lineHeight: 1.2 }}>{item.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">
+              <Card key={item.id} elevation={3} sx={{ borderRadius: 3, overflow: 'visible' }}>
+                <CardContent sx={{ pb: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 1 }}>
+                    <Box
+                      sx={{
+                        width: 80,
+                        height: 80,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                        borderRadius: 2,
+                        p: 1,
+                        flexShrink: 0,
+                      }}
+                    >
+                      <img
+                        src={getDeviceIconUrl(item.category)}
+                        alt={item.category}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                          filter: isPngIcon(item.category) ? undefined : 'brightness(0)',
+                        }}
+                      />
+                    </Box>
+                    <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
+                        <Typography variant="subtitle1" fontWeight="bold" sx={{ lineHeight: 1.2, mr: 1 }} noWrap>
+                          {item.name}
+                        </Typography>
+                        <Chip
+                          label={item.disabled ? 'Deactive' : 'Active'}
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: '0.65rem',
+                            backgroundColor: item.disabled ? alpha(theme.palette.error.main, 0.1) : alpha(theme.palette.success.main, 0.1),
+                            color: item.disabled ? theme.palette.error.main : theme.palette.success.main,
+                            fontWeight: 'bold',
+                            borderRadius: 1,
+                          }}
+                        />
+                      </Box>
+                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
                         {t(`category${(item.category || 'default').replace(/^\w/, (c) => c.toUpperCase())}`)}
                       </Typography>
+
+                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
+                        IMEI: {item.uniqueId}
+                      </Typography>
+                      
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <VehicleNumberPlate number={item.vehicle_number} small />
+                      </Box>
                     </Box>
                   </Box>
-                  <Chip
-                    label={item.disabled ? 'Deactive' : 'Active'}
-                    size="small"
-                    sx={{
-                      backgroundColor: item.disabled ? alpha('#d32f2f', 0.1) : alpha('#2e7d32', 0.1),
-                      color: item.disabled ? '#d32f2f' : '#2e7d32',
-                      border: `1px solid ${item.disabled ? alpha('#d32f2f', 0.2) : alpha('#2e7d32', 0.2)}`,
-                      fontWeight: 'bold',
-                      borderRadius: '4px',
-                      height: '24px',
-                    }}
+
+                  <Divider sx={{ my: 1.5, borderStyle: 'dashed' }} />
+
+                  <Grid container spacing={1.5}>
+                    {item.phone && (
+                      <Grid item xs={6}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <SimCardIcon fontSize="small" color="action" />
+                          <Typography variant="body2" noWrap>{item.phone}</Typography>
+                        </Box>
+                      </Grid>
+                    )}
+                    {item.contact && (
+                      <Grid item xs={6}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <SmartphoneIcon fontSize="small" color="action" />
+                          <Typography variant="body2" noWrap>{item.contact}</Typography>
+                        </Box>
+                      </Grid>
+                    )}
+                    <Grid item xs={12}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                        <DateRangeIcon fontSize="small" color="action" />
+                        <Typography variant="body2">Created: {formatDateWithMonthText(item.created_date || item.createdTime)}</Typography>
+                      </Box>
+                    </Grid>
+                    {item.expirationTime && (
+                      <Grid item xs={12}>
+                        <Box sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1,
+                          color: expStatus === 'expired' ? 'error.main' : expStatus === 'warning' ? 'warning.main' : 'text.secondary'
+                        }}>
+                          <DateRangeIcon fontSize="small" />
+                          <Typography variant="body2" fontWeight={expStatus !== 'ok' ? 'bold' : 'regular'}>
+                            Expires: {formatDateWithMonthText(item.expirationTime)}
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    )}
+                  </Grid>
+
+                  {manager && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Assigned Users:</Typography>
+                      <DeviceUsersValue deviceId={item.id} />
+                    </Box>
+                  )}
+                </CardContent>
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  p: 1.5,
+                  bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#f5f5f5',
+                  borderTop: `1px solid ${theme.palette.divider}`
+                }}>
+                  <CollectionActions
+                    itemId={item.id}
+                    editPath="/settings/device"
+                    endpoint="devices"
+                    setTimestamp={setTimestamp}
+                    customActions={[actionConnections]}
+                    readonly={deviceReadonly}
                   />
                 </Box>
-                <Divider sx={{ mb: 2 }} />
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                      <Typography variant="body2" fontWeight="medium">IMEI:</Typography>
-                      <Typography variant="body2" fontWeight="medium">{item.uniqueId}</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                      <Typography variant="body2" fontWeight="medium">Vehicle Number:</Typography>
-                      <VehicleNumberPlate number={item.vehicle_number} />
-                    </Box>
-                  </Grid>
-                  {item.phone && (
-                    <Grid item xs={6}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                        <SimCardIcon fontSize="small" />
-                        <Typography variant="body2">{item.phone} ({item.sim_operator})</Typography>
-                      </Box>
-                    </Grid>
-                  )}
-                  {item.contact && (
-                    <Grid item xs={6}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                        <SmartphoneIcon fontSize="small" />
-                        <Typography variant="body2">{item.contact}</Typography>
-                      </Box>
-                    </Grid>
-                  )}
-                  {item.expirationTime && (
-                    <Grid item xs={12}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: expStatus === 'expired' ? 'error.main' : expStatus === 'warning' ? 'warning.main' : 'text.secondary' }}>
-                        <DateRangeIcon fontSize="small" />
-                        <Typography variant="body2" fontWeight={expStatus !== 'ok' ? 'bold' : 'regular'}>
-                          Expires: {formatDateWithMonthText(item.expirationTime)}
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  )}
-                  <Grid item xs={12}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
-                      <DateRangeIcon fontSize="small" />
-                      <Typography variant="body2">Created: {formatDateWithMonthText(item.created_date || item.createdTime)}</Typography>
-                    </Box>
-                  </Grid>
-                  {manager && (
-                    <Grid item xs={12}>
-                       <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>Users:</Typography>
-                       <DeviceUsersValue deviceId={item.id} />
-                    </Grid>
-                  )}
-                </Grid>
-              </CardContent>
-              <Box sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                p: 1.5,
-                bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : '#f5f5f5',
-                borderTop: `1px solid ${theme.palette.divider}`
-              }}>
-                <CollectionActions
-                  itemId={item.id}
-                  editPath="/settings/device"
-                  endpoint="devices"
-                  setTimestamp={setTimestamp}
-                  customActions={[actionConnections]}
-                  readonly={deviceReadonly}
-                />
-              </Box>
-            </Card>
-          )}) : (
+              </Card>
+            );
+          }) : (
             <Typography textAlign="center" color="text.secondary" py={5}>Loading devices...</Typography>
           )}
 
@@ -432,7 +487,7 @@ const DevicesPage = () => {
           </Table>
         </TableContainer>
       )}
-      <CollectionFab editPath="/settings/device" />
+      {manager && <CollectionFab editPath="/settings/device" />}
     </PageLayout>
   );
 };

@@ -98,6 +98,8 @@ export const mapIcons = {
   roadroller: roadrollerPng,
   schoolbus: schoolbusPng,
   schoolvan: schoolvanPng,
+  scooter: scooterPng,
+  ship: shipPng,
   suv: suvPng,
   tankertruck: tankertruckPng,
   taxi: taxiPng,
@@ -126,7 +128,19 @@ const theme = createTheme({
 export default async () => {
   const background = await loadImage(backgroundSvg);
   mapImages.background = await prepareIcon(background);
-  mapImages.direction = await prepareIcon(await loadImage(directionSvg));
+
+  const directionImage = await loadImage(directionSvg);
+  const canvas = document.createElement('canvas');
+  const size = background.width * devicePixelRatio;
+  canvas.width = size;
+  canvas.height = size;
+  const context = canvas.getContext('2d');
+  const arrowHeight = size * 0.9;
+  const arrowWidth = directionImage.width * (arrowHeight / directionImage.height);
+  const yOffset = 0;
+  context.drawImage(directionImage, (size - arrowWidth) / 2, yOffset, arrowWidth, arrowHeight);
+  mapImages.direction = context.getImageData(0, 0, size, size);
+
   mapImages.plate = await prepareIcon(await loadImage(plateSvg));
   await Promise.all(Object.keys(mapIcons).map(async (category) => {
     const results = [];

@@ -37,6 +37,7 @@ const columnsArray = [
   ['maintenanceId', 'sharedMaintenance'],
   ['address', 'positionAddress'],
   ['attributes', 'commandData'],
+  ['vehicleNumber', 'Vehicle Number'],
 ];
 const columnsMap = new Map(columnsArray);
 
@@ -60,7 +61,7 @@ const EventReportPage = () => {
     name: t(it),
   }));
 
-  const [columns, setColumns] = usePersistedState('eventColumns', ['eventTime', 'type', 'address', 'attributes']);
+  const [columns, setColumns] = usePersistedState('eventColumns', ['eventTime', 'type', 'address', 'attributes', 'vehicleNumber']);
   const eventTypes = useMemo(() => searchParams.getAll('eventType'), [searchParams]);
   const alarmTypes = useMemo(() => searchParams.getAll('alarmType'), [searchParams]);
   const [items, setItems] = useState([]);
@@ -160,6 +161,8 @@ const EventReportPage = () => {
     switch (key) {
       case 'deviceId':
         return devices[value].name;
+      case 'vehicleNumber':
+        return devices[item.deviceId].vehicle_number;
       case 'eventTime':
         return formatTime(value, 'seconds');
       case 'type':

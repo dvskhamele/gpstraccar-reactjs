@@ -33,6 +33,8 @@ import deviceCategories from '../common/util/deviceCategories';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import useDeviceAttributes from '../common/attributes/useDeviceAttributes';
 import { useAdministrator } from '../common/util/permissions';
+import { useAttributePreference } from '../common/util/preferences';
+import { speedFromKnots, speedToKnots, speedUnitString } from '../common/util/converter';
 import SettingsMenu from './components/SettingsMenu';
 import useCommonDeviceAttributes from '../common/attributes/useCommonDeviceAttributes';
 import { useCatch } from '../reactHelper';
@@ -58,6 +60,8 @@ const DevicePage = () => {
   const admin = useAdministrator();
   const userId = useSelector((state) => state.session.user.id);
 
+  const speedUnit = useAttributePreference('speedUnit', 'kn');
+
   const commonDeviceAttributes = useCommonDeviceAttributes(t);
   const deviceAttributes = useDeviceAttributes(t);
 
@@ -71,6 +75,7 @@ const DevicePage = () => {
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   const [allSubscriptionPlans, setAllSubscriptionPlans] = useState([]);
   const [subscriptionHistory, setSubscriptionHistory] = useState([]);
+  const [groups, setGroups] = useState([]);
 
   const handleDeviceSave = () => {
     // No-op: Subscription is now handled by the main /api/devices call
@@ -89,6 +94,20 @@ const DevicePage = () => {
     };
     fetchSubscriptionPlans();
   }, []);
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const response = await fetchOrThrow('/api/groups');
+        setGroups(await response.json());
+      } catch (error) {
+        console.error('Failed to fetch groups:', error);
+      }
+    };
+    if (admin) {
+      fetchGroups();
+    }
+  }, [admin]);
 
   useEffect(() => {
     if (item?.id) {
@@ -134,7 +153,7 @@ const DevicePage = () => {
   });
 
   const validate = () => {
-    return item
+    const basicValidation = item
       && item.name
       && item.uniqueId
       && item.phone
@@ -142,7 +161,13 @@ const DevicePage = () => {
       && item.model
       && item.contact
       && (item.category && item.category !== 'default')
-      && item.vehicle_number
+      && item.vehicle_number;
+
+    if (item?.id) {
+      return basicValidation;
+    }
+
+    return basicValidation
       && item.planId
       && item.amount
       && item.paymentMethod;
@@ -160,6 +185,13 @@ const DevicePage = () => {
     return formatted.slice(0, 12);
   };
 
+  const formatDevice = (device) => {
+    const {
+      planId, amount, paymentMethod, adminNotes, ...rest
+    } = device;
+    return rest;
+  };
+
   return (
     <EditItemView
       endpoint="devices"
@@ -170,6 +202,7 @@ const DevicePage = () => {
       onItemSaved={handleDeviceSave}
       menu={<SettingsMenu />}
       breadcrumbs={['settingsTitle', 'sharedDevice']}
+      formatItem={formatDevice}
     >
       {item && (
         <>
@@ -312,6 +345,22 @@ const DevicePage = () => {
                     )}
                     fullWidth
                   />
+                  <Autocomplete
+                    value={groups.find((group) => group.id === item.groupId) || null}
+                    onChange={(_, newValue) => setItem({ ...item, groupId: newValue ? newValue.id : 0 })}
+                    options={groups}
+                    getOptionLabel={(option) => option.name || t('groupNoGroup')}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={t('groupParent')}
+                        margin="normal"
+                        fullWidth
+                      />
+                    )}
+                    fullWidth
+                    margin="normal"
+                  />
                 </CardContent>
               </Card>
             </Box>
@@ -409,6 +458,57 @@ const DevicePage = () => {
                     label="Vehicle Number"
                     placeholder="XXXX-XX-XXXX"
                     helperText="Format: RJ26-NC-2365"
+                    fullWidth
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Initial Odometer (km)"
+                    type="number"
+                    value={item.attributes?.odometer ? item.attributes.odometer / 1000 : ''}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setItem({
+                        ...item,
+                        attributes: {
+                          ...item.attributes,
+                          odometer: value ? Number(value) * 1000 : 0,
+                        },
+                      });
+                    }}
+                    fullWidth
+                    margin="normal"
+                  />
+                  <TextField
+                    label={`${t('attributeSpeedLimit')} (${speedUnitString(speedUnit, t)})`}
+                    type="number"
+                    value={item.attributes?.speedLimit ? speedFromKnots(item.attributes.speedLimit, speedUnit) : ''}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      const attributes = { ...item.attributes };
+                      if (value) {
+                        attributes.speedLimit = speedToKnots(Number(value), speedUnit);
+                      } else {
+                        delete attributes.speedLimit;
+                      }
+                      setItem({ ...item, attributes });
+                    }}
+                    fullWidth
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Fuel Consumption (L/100km)"
+                    type="number"
+                    value={item.attributes?.fuelConsumption || ''}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setItem({
+                        ...item,
+                        attributes: {
+                          ...item.attributes,
+                          fuelConsumption: value ? Number(value) : undefined,
+                        },
+                      });
+                    }}
                     fullWidth
                     margin="normal"
                   />
@@ -548,6 +648,7 @@ const DevicePage = () => {
             attributes={item.attributes}
             setAttributes={(attributes) => setItem({ ...item, attributes })}
             definitions={{ ...commonDeviceAttributes, ...deviceAttributes }}
+            exclude={['odometer', 'speedLimit']}
           />
         </>
       )}

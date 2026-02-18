@@ -33,6 +33,7 @@ const columnsArray = [
   ['startHours', 'reportStartEngineHours'],
   ['endHours', 'reportEndEngineHours'],
   ['spentFuel', 'reportSpentFuel'],
+  ['vehicleNumber', 'Vehicle Number'],
 ];
 const columnsMap = new Map(columnsArray);
 
@@ -50,7 +51,7 @@ const SummaryReportPage = () => {
   const speedUnit = useAttributePreference('speedUnit');
   const volumeUnit = useAttributePreference('volumeUnit');
 
-  const [columns, setColumns] = usePersistedState('summaryColumns', ['startTime', 'distance', 'averageSpeed']);
+  const [columns, setColumns] = usePersistedState('summaryColumns', ['startTime', 'distance', 'averageSpeed', 'vehicleNumber']);
   const daily = searchParams.get('daily') === 'true';
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -102,6 +103,8 @@ const SummaryReportPage = () => {
     switch (key) {
       case 'deviceId':
         return devices[value].name;
+      case 'vehicleNumber':
+        return devices[item.deviceId].vehicle_number;
       case 'startTime':
         return formatTime(value, 'date');
       case 'startOdometer':

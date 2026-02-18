@@ -14,7 +14,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import BadgeIcon from '@mui/icons-material/Badge';
 import EventIcon from '@mui/icons-material/Event';
 import SimCardIcon from '@mui/icons-material/SimCard';
-import { alpha, styled } from '@mui/material/styles';
+import { alpha, styled, keyframes } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import { formatBoolean, formatShortDate } from '../common/util/formatter';
@@ -22,6 +22,12 @@ import CollectionActions from './components/CollectionActions';
 import fetchOrThrow from '../common/util/fetchOrThrow';
 import { useEffectAsync } from '../reactHelper';
 import VehicleNumberPlate from '../common/components/VehicleNumberPlate';
+
+const shake = keyframes`
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-1px); }
+  20%, 40%, 60%, 80% { transform: translateX(1px); }
+`;
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -176,6 +182,10 @@ const UserCard = ({ item, manager, actionLogin, actionConnections, setTimestamp 
                   fontWeight: 'bold',
                   fontSize: '0.6rem',
                   height: 18,
+                  animation: item.disabled ? `${shake} 0.8s infinite` : 'none',
+                  '&:hover': {
+                    animation: item.disabled ? `${shake} 0.8s infinite` : 'none',
+                  }
                 }}
               />
            </Box>
@@ -236,15 +246,17 @@ const UserCard = ({ item, manager, actionLogin, actionConnections, setTimestamp 
                <Box>
                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                     <Typography variant="subtitle2" fontWeight="bold">Devices ({devices?.length || 0})</Typography>
-                    <Button 
-                         startIcon={<AddIcon />} 
-                         size="small" 
-                         variant="text" 
-                         onClick={handleOpenAddDevice}
-                         sx={{ textTransform: 'none' }}
-                       >
-                         Add
-                       </Button>
+                    {manager && (
+                      <Button 
+                           startIcon={<AddIcon />} 
+                           size="small" 
+                           variant="text" 
+                           onClick={handleOpenAddDevice}
+                           sx={{ textTransform: 'none' }}
+                         >
+                           Add
+                         </Button>
+                    )}
                  </Box>
                  {devices && devices.length > 0 ? (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>

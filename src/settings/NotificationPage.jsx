@@ -64,7 +64,10 @@ const NotificationPage = () => {
             <AccordionDetails className={classes.details}>
               <SelectField
                 value={item.type}
-                onChange={(e) => setItem({ ...item, type: e.target.value })}
+                onChange={(e) => {
+                  const type = e.target.value;
+                  setItem({ ...item, type, description: t(prefixString('event', type)) });
+                }}
                 endpoint="/api/notifications/types"
                 keyGetter={(it) => it.type}
                 titleGetter={(it) => t(prefixString('event', it.type))}

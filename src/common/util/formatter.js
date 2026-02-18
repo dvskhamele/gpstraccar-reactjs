@@ -56,11 +56,11 @@ export const formatTime = (value, format) => {
       case 'date':
         return d.format('DD-MMM-YYYY');
       case 'time':
-        return d.format('HH:mm:ss');
+        return d.format('hh:mm:ss A');
       case 'minutes':
-        return d.format('DD-MMM-YYYY HH:mm');
+        return d.format('MMM D, YYYY h:mm A');
       default:
-        return d.format('DD-MMM-YYYY HH:mm:ss');
+        return d.format('MMM D, YYYY h:mm:ss A');
     }
   }
   return '';

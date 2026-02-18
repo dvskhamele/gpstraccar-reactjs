@@ -268,6 +268,56 @@ const ServerPage = () => {
             <Accordion>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle1">
+                  UPI Configuration
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails className={classes.details}>
+                <TextField
+                  value={item.upiId || ''}
+                  onChange={(event) => setItem({ ...item, upiId: event.target.value })}
+                  label="UPI ID"
+                />
+                <FormControl fullWidth>
+                  <InputLabel shrink>UPI QR Code</InputLabel>
+                  <div style={{ marginTop: '16px', marginBottom: '8px' }}>
+                    <input
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      id="raised-button-file"
+                      type="file"
+                      onChange={useCatch(async (event) => {
+                        const newFile = event.target.files[0];
+                        if (newFile) {
+                          await fetchOrThrow(`/api/server/file/${newFile.name}`, {
+                            method: 'POST',
+                            body: newFile,
+                            headers: { 'Content-Type': newFile.type },
+                          });
+                          setItem({ ...item, upiQrImage: newFile.name });
+                        }
+                      })}
+                    />
+                    <label htmlFor="raised-button-file">
+                      <Button variant="contained" component="span" color="primary">
+                        Upload QR Code
+                      </Button>
+                    </label>
+                  </div>
+                </FormControl>
+                {item.upiQrImage && (
+                  <div style={{ marginTop: '16px', textAlign: 'center' }}>
+                    <img
+                      src={item.upiQrImage.startsWith('http') ? item.upiQrImage : `/${item.upiQrImage}`}
+                      alt="UPI QR Code"
+                      style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', border: '1px solid #ccc', borderRadius: '4px' }}
+                    />
+                  </div>
+                )}
+              </AccordionDetails>
+            </Accordion>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="subtitle1">
                   {t('sharedFile')}
                 </Typography>
               </AccordionSummary>

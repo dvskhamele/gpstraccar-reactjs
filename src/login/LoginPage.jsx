@@ -19,7 +19,6 @@ import usePersistedState from '../common/util/usePersistedState';
 import {
   generateLoginToken, handleLoginTokenListeners, nativeEnvironment, nativePostMessage,
 } from '../common/components/NativeInterface';
-import LogoImage from './LogoImage';
 import { useCatch } from '../reactHelper';
 import QrCodeDialog from '../common/components/QrCodeDialog';
 import fetchOrThrow from '../common/util/fetchOrThrow';
@@ -176,7 +175,6 @@ const LoginPage = () => {
         )}
       </div>
       <div className={classes.container}>
-        {!useMediaQuery(theme.breakpoints.down('lg')) && <LogoImage color={theme.palette.primary.main} />}
         
         <Typography variant="h4" sx={{ textAlign: 'center', fontWeight: 700, mb: 1, color: theme.palette.primary.main }}>
           {t('loginLogin')}
@@ -190,7 +188,7 @@ const LoginPage = () => {
             <TextField
               required
               error={failed}
-              label={t('userEmail')}
+              label={t('userName')}
               name="email"
               value={email}
               autoComplete="email"

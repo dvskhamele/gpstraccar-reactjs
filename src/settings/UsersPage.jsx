@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -16,6 +16,8 @@ import {
   TableFooter,
   FormControlLabel,
   CircularProgress,
+  Collapse,
+  Typography,
 } from '@mui/material';
 import LoginIcon from '@mui/icons-material/Login';
 import LinkIcon from '@mui/icons-material/Link';
@@ -56,6 +58,8 @@ const UsersPage = () => {
   const [loading, setLoading] = useState(false);
   const [temporary, setTemporary] = useState(false);
   const [filterType, setFilterType] = useState('all');
+  const [statsCollapsed, setStatsCollapsed] = useState(false);
+  const lastScrollTop = useRef(0);
 
   const handleLogin = useCatch(async (userId) => {
     await fetchOrThrow(`/api/session/${userId}`);
@@ -114,14 +118,45 @@ const UsersPage = () => {
     if (filterType === 'user') {
       return !user.administrator && !isManager;
     }
+    if (filterType === 'disabled') {
+      return user.disabled;
+    }
     return false;
   };
+
+  const handleScroll = (e) => {
+    if (isMobile) {
+      const currentScrollTop = e.target.scrollTop;
+      
+      // If scrolling down significantly (away from top), hide stats
+      if (currentScrollTop > 20 && !statsCollapsed) {
+        setStatsCollapsed(true);
+      }
+      // If back at the very top, show stats
+      else if (currentScrollTop < 10 && statsCollapsed) {
+        setStatsCollapsed(false);
+      }
+      
+      lastScrollTop.current = currentScrollTop;
+    }
+  };
+
+  const dashboardStats = (
+    <Box>
+      <Collapse in={!isMobile || !statsCollapsed} timeout={1000}>
+        <Box sx={{ position: 'relative' }}>
+           <DashboardStats />
+        </Box>
+      </Collapse>
+    </Box>
+  );
 
   return (
     <PageLayout
       menu={<SettingsMenu />}
       breadcrumbs={['settingsTitle', 'settingsUsers']}
-      stats={<DashboardStats />}
+      stats={manager ? dashboardStats : null}
+      onScroll={handleScroll}
       toolbar={(
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, alignItems: 'center' }}>
           <TextField
@@ -143,6 +178,7 @@ const UsersPage = () => {
                           <MenuItem value="admin">{t('userTypeAdmin')}</MenuItem>
                           <MenuItem value="manager">Dealer</MenuItem>
                           <MenuItem value="user">{t('userTypeUser')}</MenuItem>
+                          <MenuItem value="disabled">Disabled</MenuItem>
                         </Select>          </FormControl>
         </Box>
       )}

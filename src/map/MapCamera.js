@@ -21,7 +21,7 @@ const MapCamera = ({
     } else {
       map.jumpTo({
         center: [longitude, latitude],
-        zoom: Math.max(map.getZoom(), 10),
+        zoom: Math.max(map.getZoom(), 16), // Changed from 10 to 16 for closer zoom (approx 100m view)
       });
     }
   }, [latitude, longitude, positions, coordinates]);

@@ -27,6 +27,9 @@ import GeofencesValue from './GeofencesValue';
 import DriverValue from './DriverValue';
 
 const PositionValue = ({ position, property, attribute }) => {
+  if (!position) {
+    return null;
+  }
   const t = useTranslation();
 
   const deviceReadonly = useDeviceReadonly();

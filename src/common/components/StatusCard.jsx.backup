@@ -56,7 +56,7 @@ import { useCatch, useCatchCallback } from "../../reactHelper";
 import { useAttributePreference } from "../util/preferences";
 import fetchOrThrow from "../util/fetchOrThrow";
 import VehicleNumberPlate from "./VehicleNumberPlate";
-import { formatDistance, formatVolume } from "../util/formatter";
+import { formatDistance, formatTime } from "../util/formatter";
 import AddressValue from "./AddressValue";
 import BatteryIcon from "./BatteryIcon";
 import RssiIcon from "./RssiIcon";
@@ -67,15 +67,15 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     width: "100%",
     [theme.breakpoints.up("md")]: {
       width: "auto",
-      maxWidth: 1700, // Increased width to fit more content
-      minHeight: 220, // Reduced height for desktop
-      maxHeight: 280, // Reduced max height for desktop
+      maxWidth: 1200, // Increased width to fit more content
+      minHeight: 320, // Increased height to accommodate larger elements
+      maxHeight: 420, // Allow more height
     },
     [theme.breakpoints.down("md")]: {
       width: "100%",
       maxWidth: "100%",
-      minHeight: "25vh", // Further reduced height for mobile to accommodate scrollable content
-      maxHeight: "35vh", // Reduced max height
+      minHeight: "30vh", // Reduced height for mobile
+      maxHeight: "40vh", // Reduced height for mobile
       margin: 0,
       borderRadius: theme.spacing(3), // More rounded corners for premium look
       boxShadow: "0px -8px 24px rgba(0,0,0,0.15)", // Enhanced shadow for premium look
@@ -87,7 +87,7 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     overflow: "hidden", // Ensure content doesn't overflow
   },
   header: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(1.5),
     display: "flex",
     justifyContent: "space-between",
     alignItems: "flex-start",
@@ -107,26 +107,25 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
   headerButton: {
     alignSelf: "flex-start",
     flexShrink: 0,
-    zIndex: 3, // Ensure close button is above other content
   },
   headerContent: {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
-    gap: theme.spacing(0.5),
+    gap: theme.spacing(1),
     flex: 1,
     minWidth: 0,
   },
   headerTopRow: {
     display: "flex",
     alignItems: "center",
-    gap: theme.spacing(0.5),
+    gap: theme.spacing(1),
     width: "100%",
     flexWrap: "wrap", // Wrap items on small screens
   },
   deviceName: {
     fontWeight: 700,
-    fontSize: "1rem",
+    fontSize: "1.2rem",
     color: theme.palette.primary.main,
     whiteSpace: "nowrap",
     overflow: "hidden",
@@ -150,36 +149,34 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     minWidth: 0, // Allows flex child to shrink below content size
     flexWrap: "wrap", // Allow wrapping on small screens
     wordBreak: "break-word", // Break long addresses
-    fontSize: "0.75rem", // Smaller font size
     [theme.breakpoints.down("md")]: {
       flexWrap: "wrap",
       wordBreak: "break-word",
-      fontSize: "0.75rem", // Smaller font on mobile
+      fontSize: "0.8rem", // Slightly smaller font on mobile
     },
   },
   content: {
-    padding: theme.spacing(0.15),
+    padding: theme.spacing(1),
     flex: 1,
     display: "flex",
     flexDirection: "column",
     [theme.breakpoints.down("md")]: {
-      maxHeight: "calc(35vh - 120px)", // Adjust based on header and footer heights
+      maxHeight: "calc(40vh - 120px)", // Reduced based on new card height
       minHeight: "0",
       overflowY: "auto", // Enable vertical scrolling on mobile
       overflowX: "hidden", // Prevent horizontal scrolling
     },
     [theme.breakpoints.up("md")]: {
-      overflowY: "auto", // Enable scrolling on desktop when content overflows
-      minHeight: "80px", // Reduced minimum height for desktop content
+      overflowY: "auto", // Also enable on desktop for consistency
     },
   },
   mainGrid: {
     display: "grid",
-    gridTemplateColumns: "1fr",
+    gridTemplateColumns: "140px 1fr",
     gap: theme.spacing(1),
     width: "100%",
     height: "100%",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("sm")]: {
       display: "flex",
       flexDirection: "column",
       height: "auto",
@@ -190,22 +187,22 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
   speedSection: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center", // Center items vertically
+    alignItems: "flex-start", // Align to top
     justifyContent: "space-between",
-    padding: theme.spacing(0.25),
+    padding: theme.spacing(1),
     backgroundColor:
       theme.palette.mode === "dark"
         ? theme.palette.grey[900]
         : theme.palette.grey[100],
     borderRadius: theme.spacing(2),
-    margin: theme.spacing(0.25, 0),
-    [theme.breakpoints.down("md")]: {
+    margin: theme.spacing(1, 0),
+    [theme.breakpoints.down("sm")]: {
       display: "flex",
       flexDirection: "row", // Keep as row for side-by-side layout on mobile
-      padding: theme.spacing(0.25), // Further reduced padding for mobile
+      padding: theme.spacing(1), // Keep padding for mobile
       alignItems: "center", // Center items vertically
       flex: "0 0 auto", // Don't grow on mobile
-      gap: theme.spacing(0.25), // Further reduced gap between elements
+      gap: theme.spacing(1), // Add gap between elements
       width: "100%", // Ensure full width on mobile
       boxSizing: "border-box", // Ensure padding is included in width calculation
     },
@@ -216,22 +213,19 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     alignItems: "center",
     justifyContent: "center",
     flex: "0 0 auto", // Don't grow on mobile
-    padding: theme.spacing(0.25),
+    padding: theme.spacing(0.5),
     [theme.breakpoints.down("sm")]: {
       flex: "0 0 calc(45% - 8px)", // Take up to 45% minus some space for gap to prevent overflow
       alignItems: "center", // Center content in the allocated space
       justifyContent: "center",
       boxSizing: "border-box", // Ensure padding is included in width calculation
     },
-    [theme.breakpoints.up("md")]: {
-      flex: "0 0 40%", // On desktop, take up 40% of the space
-    },
   },
   mobileDataBox: {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(1.5),
     backgroundColor:
       theme.palette.mode === "dark"
         ? theme.palette.grey[800]
@@ -240,15 +234,14 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     minWidth: 140,
     width: "100%", // Full width of its allocated space
     flex: "0 0 calc(55% - 8px)", // Take up to 55% minus some space for gap to prevent overflow
-    maxHeight: "150px", // Increased height to fit properly
+    maxHeight: "150px", // Limit height to fit properly
     overflowY: "auto", // Enable scrolling if content overflows
     overflowX: "hidden", // Prevent horizontal overflow
     boxShadow:
       "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)", // Tailwind-inspired shadow
     boxSizing: "border-box", // Ensure padding is included in width calculation
     [theme.breakpoints.up("md")]: {
-      flex: "0 0 calc(60% - 8px)", // On desktop, take up 60% of the space
-      maxHeight: "150px", // Increased height on desktop
+      display: "none", // Hide on desktop
     },
   },
   mobileDataItem: {
@@ -298,31 +291,16 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
       padding: theme.spacing(1, 0), // Add some padding for spacing
       boxSizing: "border-box", // Ensure padding is included in width calculation
     },
-    [theme.breakpoints.up("md")]: {
-      display: "flex",
-      flexDirection: "column", // Same as mobile
-      flex: "0 0 auto", // Don't grow on desktop
-      width: "100%", // Full width
-      padding: theme.spacing(1, 0), // Add some padding for spacing
-      boxSizing: "border-box", // Ensure padding is included in width calculation
-    },
   },
   dataRow: {
     display: "flex",
     flexWrap: "wrap", // Allow items to wrap to next line
-    gap: theme.spacing(0.5),
+    gap: theme.spacing(1),
     width: "100%", // Ensure full width
     [theme.breakpoints.down("sm")]: {
       flexWrap: "wrap", // Allow wrapping on mobile
       flexDirection: "row", // Keep as row for side-by-side layout
-      paddingBottom: theme.spacing(0.5),
-      width: "100%", // Use full width
-      justifyContent: "flex-start", // Align items to start
-    },
-    [theme.breakpoints.up("md")]: {
-      flexWrap: "wrap", // Allow wrapping on desktop too
-      flexDirection: "row", // Same as mobile
-      paddingBottom: theme.spacing(0.5),
+      paddingBottom: theme.spacing(1),
       width: "100%", // Use full width
       justifyContent: "flex-start", // Align items to start
     },
@@ -330,13 +308,13 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
   statItem: {
     display: "flex",
     alignItems: "center",
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(0.75),
     backgroundColor:
       theme.palette.mode === "dark"
         ? theme.palette.grey[800]
         : theme.palette.grey[50],
     borderRadius: theme.spacing(1.5),
-    minWidth: 55, // Increased min width to better accommodate 3 columns
+    minWidth: 55, // Further reduced min width to better accommodate 3 columns
     height: 85, // Increased height for better appearance
     justifyContent: "center",
     flexDirection: "column", // Stack icon and text vertically on mobile
@@ -346,16 +324,16 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     overflow: "hidden", // Prevent content from overflowing
     [theme.breakpoints.down("sm")]: {
       flex: "0 0 calc(33.33% - 6px)", // Three items per row with reduced gap
-      height: 85, // Increased height on mobile
-      marginBottom: theme.spacing(0.5), // Increased space between items when wrapped
+      height: 85, // Consistent height on mobile
+      marginBottom: theme.spacing(1), // Add space between items when wrapped
     },
     [theme.breakpoints.up("md")]: {
-      flexDirection: "column", // Keep column layout on desktop too, like mobile
-      justifyContent: "center",
-      textAlign: "center",
-      height: 85,
-      minWidth: 70,
-      padding: theme.spacing(0.5),
+      flexDirection: "row", // Row layout on desktop
+      justifyContent: "flex-start",
+      textAlign: "left",
+      height: 80,
+      minWidth: 100,
+      padding: theme.spacing(0.75),
     },
   },
   statIcon: {
@@ -368,10 +346,6 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     [theme.breakpoints.down("sm")]: {
       marginRight: 0,
       marginBottom: theme.spacing(0.5),
-    },
-    [theme.breakpoints.up("md")]: {
-      marginRight: 0, // Same as mobile
-      marginBottom: theme.spacing(0.5), // Increased spacing
     },
   },
   statLabel: {
@@ -398,13 +372,10 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     [theme.breakpoints.down("sm")]: {
       flex: "0 0 auto", // Don't grow on mobile
     },
-    [theme.breakpoints.up("md")]: {
-      flex: "0 0 auto", // Don't grow on desktop either, same as mobile
-    },
   },
   actions: {
     justifyContent: "space-around", // Space out actions evenly on mobile
-    padding: theme.spacing(0.15, 0.25),
+    padding: theme.spacing(1, 1.5),
     backgroundColor:
       theme.palette.mode === "dark"
         ? theme.palette.grey[900]
@@ -553,8 +524,6 @@ const StatusCard = ({
     geofenceIds: <RoomIcon fontSize="small" />,
     sat: <LocationSearchingIcon fontSize="small" />,
     fuel: <LocalGasStationIcon fontSize="small" style={{ color: "#ff9800" }} />,
-    fuelUsed: <LocalGasStationIcon fontSize="small" style={{ color: "#ff9800" }} />,
-    fuelConsumption: <LocalGasStationIcon fontSize="small" style={{ color: "#ff9800" }} />,
     charge: <PowerIcon fontSize="small" />,
     operator: <InfoOutlinedIcon fontSize="small" />,
     alarm: <AlarmIcon fontSize="small" style={{ color: "#f44336" }} />,
@@ -578,9 +547,8 @@ const StatusCard = ({
   const positionAttributes = usePositionAttributes(t);
   const positionItems = useAttributePreference(
     "positionItems",
-    "fixTime,totalDistance,course,ignition,motion,odometer,todayStartTime",
+    "fixTime,totalDistance,course,ignition,motion,odometer",
   );
-  const volumeUnit = useAttributePreference('volumeUnit');
 
   const navigationAppLink = useAttributePreference("navigationAppLink");
   const navigationAppTitle = useAttributePreference("navigationAppTitle");
@@ -644,7 +612,6 @@ const StatusCard = ({
             default={{ x: 0, y: 0, width: "auto", height: "auto" }}
             enableResizing={false}
             dragHandleClassName="draggable-header"
-            cancel=".MuiIconButton-root" /* Prevent dragging when clicking the close button */
             style={{ position: "relative" }}
           >
             <Card elevation={3} className={classes.card}>
@@ -681,7 +648,7 @@ const StatusCard = ({
                       <AddressValue
                         latitude={position?.latitude}
                         longitude={position?.longitude}
-                        originalAddress={null}
+                        originalAddress={position?.address}
                       />
                     </Typography>
                   </div>
@@ -690,7 +657,6 @@ const StatusCard = ({
                   size="small"
                   onClick={onClose}
                   className={classes.headerButton}
-                  edge="end"
                 >
                   <CloseIcon />
                 </IconButton>
@@ -720,9 +686,8 @@ const StatusCard = ({
                           width: "100%", // Ensure full width constraint
                         },
                         [theme.breakpoints.up("md")]: {
-                          flexDirection: "column", // Keep as column for desktop too, like mobile
-                          overflowY: "auto", // Enable vertical scrolling on desktop
-                          width: "100%", // Ensure full width constraint
+                          flexDirection: "row", // Horizontal layout on desktop
+                          overflowX: "auto", // Horizontal scrolling on desktop if needed
                         },
                       })}
                     >
@@ -809,54 +774,6 @@ const StatusCard = ({
                             </div>
                           )}
 
-                          {/* Fuel Level */}
-                          {position.attributes.fuel !== undefined && (
-                            <div className={classes.mobileDataItem}>
-                              <LocalGasStationIcon
-                                fontSize="small"
-                                style={{ fontSize: "1rem", color: "#ff9800" }}
-                              />
-                              <Typography
-                                variant="caption"
-                                className={classes.mobileDataValue}
-                              >
-                                {`${position.attributes.fuel.toFixed(2)} %`}
-                              </Typography>
-                            </div>
-                          )}
-
-                          {/* Fuel Used */}
-                          {position.attributes.fuelUsed !== undefined && (
-                            <div className={classes.mobileDataItem}>
-                              <LocalGasStationIcon
-                                fontSize="small"
-                                style={{ fontSize: "1rem", color: "#ff9800" }}
-                              />
-                              <Typography
-                                variant="caption"
-                                className={classes.mobileDataValue}
-                              >
-                                {formatVolume(position.attributes.fuelUsed, volumeUnit, t)}
-                              </Typography>
-                            </div>
-                          )}
-
-                          {/* Fuel Consumption - Alternative/Fallback */}
-                          {position.attributes.fuelConsumption !== undefined && position.attributes.fuelUsed === undefined && (
-                            <div className={classes.mobileDataItem}>
-                              <LocalGasStationIcon
-                                fontSize="small"
-                                style={{ fontSize: "1rem", color: "#ff9800" }}
-                              />
-                              <Typography
-                                variant="caption"
-                                className={classes.mobileDataValue}
-                              >
-                                {formatVolume(position.attributes.fuelConsumption, volumeUnit, t)}
-                              </Typography>
-                            </div>
-                          )}
-
                           {/* Today Start Time */}
                           {device.todayStartTime !== undefined && (
                             <div className={classes.mobileDataItem}>
@@ -868,7 +785,7 @@ const StatusCard = ({
                                 variant="caption"
                                 className={classes.mobileDataValue}
                               >
-                                {dayjs(device.todayStartTime).format('HH:mm')}
+                                {formatTime(device.todayStartTime, "seconds")}
                               </Typography>
                             </div>
                           )}
@@ -877,164 +794,154 @@ const StatusCard = ({
                         {/* Removed duplicate battery and RSSI icons from right side */}
                       </div>
 
-                      {/* Data Section - Same layout for both mobile and desktop */}
-                      <Box
-                        sx={{
-                          width: '100%',
-                          mt: 1
-                        }}
-                      >
-                        {/* Mobile-style layout for both mobile and desktop */}
-                        <div className={classes.dataGrid}>
-                          <div className={classes.dataRow} style={{ width: '100%', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-                            {positionItems.split(",").map((key) => {
-                              // Skip the address, speed, batteryLevel, rssi, todayDistance, todayStartTime, fuel, fuelUsed, and fuelConsumption fields to prevent duplicate display
-                              if (
-                                key.trim() === "address" ||
-                                key.trim() === "speed" ||
-                                key.trim() === "batteryLevel" ||
-                                key.trim() === "rssi" ||
-                                key.trim() === "todayDistance" ||
-                                key.trim() === "todayStartTime" ||
-                                key.trim() === "fuel" ||
-                                key.trim() === "fuelUsed" ||
-                                key.trim() === "fuelConsumption"
-                              )
-                                return null;
-                              if (
-                                !position.hasOwnProperty(key) &&
-                                !position.attributes.hasOwnProperty(key)
-                              )
-                                return null;
+                      {/* Data Section - Additional Position Items Only */}
+                      <div className={classes.dataGrid}>
+                        {/* Additional Position Items Blocks */}
+                        <div className={classes.dataRow} style={{ width: '100%', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+                          {positionItems.split(",").map((key) => {
+                            // Skip the address, speed, batteryLevel, rssi, todayDistance, and todayStartTime fields to prevent duplicate display
+                            if (
+                              key.trim() === "address" ||
+                              key.trim() === "speed" ||
+                              key.trim() === "batteryLevel" ||
+                              key.trim() === "rssi" ||
+                              key.trim() === "todayDistance" ||
+                              key.trim() === "todayStartTime"
+                            )
+                              return null;
+                            if (
+                              !position.hasOwnProperty(key) &&
+                              !position.attributes.hasOwnProperty(key)
+                            )
+                              return null;
 
-                              return (
-                                <div
-                                  key={key}
-                                  className={classes.statContainer}
-                                >
-                                  <div className={classes.statItem}>
-                                    {attributeIcons[key] && (
-                                      <div className={classes.statIcon}>
-                                        {attributeIcons[key]}
-                                      </div>
-                                    )}
-                                    <Box>
-                                      <Typography
-                                        variant="caption"
-                                        className={classes.statLabel}
-                                      >
-                                        {positionAttributes[key]?.name || key}
-                                      </Typography>
-                                      {(() => {
-                                        if (
-                                          key === "fixTime" ||
-                                          key === "deviceTime" ||
-                                          key === "serverTime"
-                                        ) {
-                                          return (
+                            return (
+                              <div
+                                key={key}
+                                className={classes.statContainer}
+                              >
+                                <div className={classes.statItem}>
+                                  {attributeIcons[key] && (
+                                    <div className={classes.statIcon}>
+                                      {attributeIcons[key]}
+                                    </div>
+                                  )}
+                                  <Box>
+                                    <Typography
+                                      variant="caption"
+                                      className={classes.statLabel}
+                                    >
+                                      {positionAttributes[key]?.name || key}
+                                    </Typography>
+                                    {(() => {
+                                      if (
+                                        key === "fixTime" ||
+                                        key === "deviceTime" ||
+                                        key === "serverTime"
+                                      ) {
+                                        return (
+                                          <Box
+                                            sx={{
+                                              display: "flex",
+                                              flexDirection: "column",
+                                              width: "100%",
+                                              mt: 0.2,
+                                            }}
+                                          >
                                             <Box
                                               sx={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                width: "100%",
-                                                mt: 0.2,
+                                                backgroundColor: "#e3f2fd", // Light Blue
+                                                color: "#1e88e5", // Darker Blue Text
+                                                padding: "1px 2px",
+                                                borderRadius: "3px",
+                                                textAlign: "center",
+                                                fontSize: "0.6rem",
                                               }}
                                             >
-                                              <Box
+                                              <Typography
+                                                variant="caption"
                                                 sx={{
-                                                  backgroundColor: "#e3f2fd", // Light Blue
-                                                  color: "#1e88e5", // Darker Blue Text
-                                                  padding: "1px 2px",
-                                                  borderRadius: "3px",
-                                                  textAlign: "center",
+                                                  display: "block",
+                                                  fontWeight: "bold",
                                                   fontSize: "0.6rem",
                                                 }}
                                               >
-                                                <Typography
-                                                  variant="caption"
-                                                  sx={{
-                                                    display: "block",
-                                                    fontWeight: "bold",
-                                                    fontSize: "0.6rem",
-                                                  }}
-                                                >
-                                                  {dayjs(position[key]).format(
-                                                    "DD/MMM/YYYY",
-                                                  )}
-                                                </Typography>
-                                              </Box>
-                                              <Box
-                                                sx={{
-                                                  backgroundColor: "#90caf9", // Medium Blue
-                                                  color: "#0d47a1", // Darkest Blue Text
-                                                  padding: "1px 2px",
-                                                  borderRadius: "3px",
-                                                  textAlign: "center",
-                                                  fontSize: "0.6rem",
-                                                  mt: 0.1,
-                                                }}
-                                              >
-                                                <Typography
-                                                  variant="caption"
-                                                  sx={{
-                                                    display: "block",
-                                                    fontWeight: "bold",
-                                                    fontSize: "0.6rem",
-                                                  }}
-                                                >
-                                                  {dayjs(position[key]).format(
-                                                    "hh:mm A",
-                                                  )}
-                                                </Typography>
-                                              </Box>
+                                                {dayjs(position[key]).format(
+                                                  "DD/MMM/YYYY",
+                                                )}
+                                              </Typography>
                                             </Box>
-                                          );
-                                        } else {
-                                          return (
-                                            <Typography
-                                              variant="body2"
-                                              className={classes.statValue}
+                                            <Box
                                               sx={{
-                                                fontSize:
-                                                  key.trim() === "fixTime" ||
-                                                  key.trim() === "deviceTime" ||
-                                                  key.trim() === "serverTime"
-                                                    ? "0.6rem"
-                                                    : "0.8rem",
+                                                backgroundColor: "#90caf9", // Medium Blue
+                                                color: "#0d47a1", // Darkest Blue Text
+                                                padding: "1px 2px",
+                                                borderRadius: "3px",
+                                                textAlign: "center",
+                                                fontSize: "0.6rem",
+                                                mt: 0.1,
                                               }}
                                             >
-                                              <PositionValue
-                                                position={position}
-                                                property={
-                                                  position.hasOwnProperty(key)
-                                                    ? key
-                                                    : null
-                                                }
-                                                attribute={
-                                                  position.hasOwnProperty(key)
-                                                    ? null
-                                                    : key
-                                                }
-                                              />
-                                            </Typography>
-                                          );
-                                        }
-                                      })()}
-                                    </Box>
-                                  </div>
+                                              <Typography
+                                                variant="caption"
+                                                sx={{
+                                                  display: "block",
+                                                  fontWeight: "bold",
+                                                  fontSize: "0.6rem",
+                                                }}
+                                              >
+                                                {dayjs(position[key]).format(
+                                                  "hh:mm A",
+                                                )}
+                                              </Typography>
+                                            </Box>
+                                          </Box>
+                                        );
+                                      } else {
+                                        return (
+                                          <Typography
+                                            variant="body2"
+                                            className={classes.statValue}
+                                            sx={{
+                                              fontSize:
+                                                key.trim() === "fixTime" ||
+                                                key.trim() === "deviceTime" ||
+                                                key.trim() === "serverTime"
+                                                  ? "0.6rem"
+                                                  : "0.8rem",
+                                            }}
+                                          >
+                                            <PositionValue
+                                              position={position}
+                                              property={
+                                                position.hasOwnProperty(key)
+                                                  ? key
+                                                  : null
+                                              }
+                                              attribute={
+                                                position.hasOwnProperty(key)
+                                                  ? null
+                                                  : key
+                                              }
+                                            />
+                                          </Typography>
+                                        );
+                                      }
+                                    })()}
+                                  </Box>
                                 </div>
-                              );
-                            })}
-                          </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      </Box>
+                      </div>
                     </Box>
 
                     <Box
                       sx={{
-                        mt: 0.5,
+                        mt: 1,
                         display: "flex",
-                        justifyContent: "center", // Center the link like mobile view
+                        justifyContent: "flex-end",
                         width: "100%",
                       }}
                     >

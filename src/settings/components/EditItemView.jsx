@@ -9,7 +9,7 @@ import useSettingsStyles from '../common/useSettingsStyles';
 import fetchOrThrow from '../../common/util/fetchOrThrow';
 
 const EditItemView = ({
-  children, endpoint, item, setItem, defaultItem, validate, onItemSaved, menu, breadcrumbs,
+  children, endpoint, item, setItem, defaultItem, validate, onItemSaved, menu, breadcrumbs, formatItem,
 }) => {
   const navigate = useNavigate();
   const { classes } = useSettingsStyles();
@@ -34,10 +34,12 @@ const EditItemView = ({
       url += `/${id}`;
     }
 
+    const itemToSave = formatItem ? formatItem(item) : item;
+
     const response = await fetchOrThrow(url, {
       method: !id ? 'POST' : 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item),
+      body: JSON.stringify(itemToSave),
     });
 
     if (onItemSaved) {

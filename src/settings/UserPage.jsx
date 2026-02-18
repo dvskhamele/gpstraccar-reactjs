@@ -23,6 +23,8 @@ import {
 import CachedIcon from '@mui/icons-material/Cached';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -63,6 +65,7 @@ const UserPage = () => {
 
   const { id } = useParams();
   const [item, setItem] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffectAsync(async () => {
     if (id) {
@@ -73,9 +76,21 @@ const UserPage = () => {
         setItem(await response.json());
       }
     } else {
-      setItem(admin ? { deviceLimit: 0, userLimit: 1, administrator: false } : {});
+      setItem(admin
+        ? { deviceLimit: 0, userLimit: 1, administrator: false }
+        : { userLimit: 0, deviceLimit: -1, deviceReadonly: true });
     }
   }, [id, currentUser]);
+
+  useEffect(() => {
+    // If this is a new user page, and the item has been initialized
+    if (!id && item) {
+      // If the creator is a manager (but not an admin) and the new user item doesn't have deviceReadonly set yet
+      if (manager && !admin && item.deviceReadonly === undefined) {
+        setItem({ ...item, deviceReadonly: true });
+      }
+    }
+  }, [item, id, manager, admin]);
 
   const [deleteEmail, setDeleteEmail] = useState();
   const [deleteFailed, setDeleteFailed] = useState(false);
@@ -120,7 +135,6 @@ const UserPage = () => {
         userLimit: 1,
         deviceLimit: 0,
         deviceReadonly: false,
-        role: 'MANAGER', // Explicitly set role field with correct enum value
       });
     } else if (role === 'user') {
       setItem({
@@ -129,7 +143,6 @@ const UserPage = () => {
         userLimit: 0,
         deviceLimit: -1,
         deviceReadonly: true,
-        role: 'USER', // Explicitly set role field with correct enum value
       });
     }
   };
@@ -161,10 +174,19 @@ const UserPage = () => {
       url += `/${id}`;
     }
 
+    const sanitizedItem = { ...item };
+
+    if (!admin) {
+      delete sanitizedItem.userLimit;
+      delete sanitizedItem.deviceLimit;
+    }
+
+    console.log('Sending JSON:', JSON.stringify(sanitizedItem, null, 2));
+
     const response = await fetchOrThrow(url, {
       method: !id ? 'POST' : 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item),
+      body: JSON.stringify(sanitizedItem),
     });
 
     onItemSaved(await response.json());
@@ -204,7 +226,7 @@ const UserPage = () => {
                     margin="normal"
                   />
                   <TextField
-                    label={t('userEmail')}
+                    label={t('userName')}
                     value={item.email || ''}
                     onChange={(e) => setItem({ ...item, email: e.target.value })}
                     fullWidth
@@ -214,11 +236,24 @@ const UserPage = () => {
                   {!openIdForced && (
                     <TextField
                       label={t('userPassword')}
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       value={item.password || ''}
                       onChange={(e) => setItem({ ...item, password: e.target.value })}
                       fullWidth
                       margin="normal"
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              edge="end"
+                              size="small"
+                            >
+                              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                   <TextField
@@ -268,8 +303,8 @@ const UserPage = () => {
                   <TextField
                     label={t('userDeviceLimit')}
                     type="number"
-                    value={item.deviceLimit || 0}
-                    onChange={(e) => setItem({ ...item, deviceLimit: Number(e.target.value) })}
+                    value={item.deviceLimit ?? ''}
+                    onChange={(e) => setItem({ ...item, deviceLimit: e.target.value === '' ? null : Number(e.target.value) })}
                     disabled={!admin}
                     fullWidth
                     margin="normal"
@@ -277,8 +312,8 @@ const UserPage = () => {
                   <TextField
                     label={t('userUserLimit')}
                     type="number"
-                    value={item.userLimit || 0}
-                    onChange={(e) => setItem({ ...item, userLimit: Number(e.target.value) })}
+                    value={item.userLimit ?? ''}
+                    onChange={(e) => setItem({ ...item, userLimit: e.target.value === '' ? null : Number(e.target.value) })}
                     disabled={!admin}
                     fullWidth
                     margin="normal"
@@ -515,7 +550,7 @@ const UserPage = () => {
                   <CardContent>
                     <Typography variant="h6" color="error">{t('userDeleteAccount')}</Typography>
                     <TextField
-                      label={t('userEmail')}
+                      label={t('userName')}
                       value={deleteEmail || ''}
                       onChange={(e) => setDeleteEmail(e.target.value)}
                       error={deleteFailed}

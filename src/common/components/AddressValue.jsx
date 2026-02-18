@@ -10,26 +10,27 @@ const AddressValue = ({ latitude, longitude, originalAddress }) => {
 
   const addressEnabled = useSelector((state) => state.session.server.geocoderEnabled);
 
-  const [address, setAddress] = useState();
+  const [address, setAddress] = useState(originalAddress);
 
   useEffect(() => {
-    setAddress(originalAddress);
-  }, [latitude, longitude, originalAddress]);
+    if (addressEnabled && latitude && longitude) {
+      setAddress(null); // Clear previous address to force new fetch
+      const fetchAddress = async () => {
+        try {
+          const query = new URLSearchParams({ latitude, longitude });
+          const response = await fetchOrThrow(`/api/server/geocode?${query.toString()}`);
+          setAddress(await response.text());
+        } catch (error) {
+          // ignore errors
+        }
+      };
+      fetchAddress();
+    } else {
+      setAddress(originalAddress); // If geocoding disabled or coordinates missing, use original (now null)
+    }
+  }, [addressEnabled, latitude, longitude, originalAddress]);
 
-  const showAddress = useCatch(async (event) => {
-    event.preventDefault();
-    const query = new URLSearchParams({ latitude, longitude });
-    const response = await fetchOrThrow(`/api/server/geocode?${query.toString()}`);
-    setAddress(await response.text());
-  });
-
-  if (address) {
-    return address;
-  }
-  if (addressEnabled) {
-    return (<Link href="#" onClick={showAddress}>{t('sharedShowAddress')}</Link>);
-  }
-  return '';
+  return address || t('sharedLoading');
 };
 
 export default AddressValue;

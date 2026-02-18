@@ -45,6 +45,7 @@ const columnsArray = [
   ['duration', 'reportDuration'],
   ['spentFuel', 'reportSpentFuel'],
   ['driverName', 'sharedDriver'],
+  ['vehicleNumber', 'Vehicle Number'],
 ];
 const columnsMap = new Map(columnsArray);
 
@@ -60,7 +61,7 @@ const TripReportPage = () => {
   const speedUnit = useAttributePreference('speedUnit');
   const volumeUnit = useAttributePreference('volumeUnit');
 
-  const [columns, setColumns] = usePersistedState('tripColumns', ['startTime', 'endTime', 'distance', 'averageSpeed']);
+  const [columns, setColumns] = usePersistedState('tripColumns', ['startTime', 'endTime', 'distance', 'averageSpeed', 'vehicleNumber']);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -144,6 +145,8 @@ const TripReportPage = () => {
     switch (key) {
       case 'deviceId':
         return devices[value].name;
+      case 'vehicleNumber':
+        return devices[item.deviceId].vehicle_number;
       case 'startTime':
       case 'endTime':
         return formatTime(value, 'minutes');

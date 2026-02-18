@@ -96,6 +96,14 @@ const MainPage = () => {
     }
   }, [desktop, mapOnSelect, selectedDeviceId]);
 
+  const handleStatusFilter = (status) => {
+    if (status) {
+      setFilter({ ...filter, statuses: [status] });
+    } else {
+      setFilter({ ...filter, statuses: [] });
+    }
+  };
+
   useFilter(keyword, filter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
 
   return (
@@ -112,7 +120,7 @@ const MainPage = () => {
             pointerEvents: 'none', // Allow clicking through to map for empty spaces
           }}>
             <div style={{ pointerEvents: 'auto' }}>
-              <DashboardStats />
+              <DashboardStats onStatusClick={handleStatusFilter} />
             </div>
           </div>
           <MainMap

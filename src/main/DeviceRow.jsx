@@ -211,24 +211,26 @@ const DeviceRow = ({ devices, index, style }) => {
               )}
             </Box>
             {position && position.attributes.hasOwnProperty('batteryLevel') && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Typography variant="caption" sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.secondary' }}>
-                  {formatPercentage(position.attributes.batteryLevel)}
-                </Typography>
-                {(position.attributes.batteryLevel > 70 && (
-                  position.attributes.charge
-                    ? (<BatteryChargingFullIcon sx={{ fontSize: 16 }} className={classes.success} />)
-                    : (<BatteryFullIcon sx={{ fontSize: 16 }} className={classes.success} />)
-                )) || (position.attributes.batteryLevel > 30 && (
-                  position.attributes.charge
-                    ? (<BatteryCharging60Icon sx={{ fontSize: 16 }} className={classes.warning} />)
-                    : (<Battery60Icon sx={{ fontSize: 16 }} className={classes.warning} />)
-                )) || (
-                  position.attributes.charge
-                    ? (<BatteryCharging20Icon sx={{ fontSize: 16 }} className={classes.error} />)
-                    : (<Battery20Icon sx={{ fontSize: 16 }} className={classes.error} />)
-                )}
-              </Box>
+              <Tooltip title={`${t('positionBatteryLevel')}: ${formatPercentage(position.attributes.batteryLevel)}`}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.secondary' }}>
+                    {formatPercentage(position.attributes.batteryLevel)}
+                  </Typography>
+                  {(position.attributes.batteryLevel > 70 && (
+                    position.attributes.charge
+                      ? (<BatteryChargingFullIcon sx={{ fontSize: 16 }} className={classes.success} />)
+                      : (<BatteryFullIcon sx={{ fontSize: 16 }} className={classes.success} />)
+                  )) || (position.attributes.batteryLevel > 30 && (
+                    position.attributes.charge
+                      ? (<BatteryCharging60Icon sx={{ fontSize: 16 }} className={classes.warning} />)
+                      : (<Battery60Icon sx={{ fontSize: 16 }} className={classes.warning} />)
+                  )) || (
+                    position.attributes.charge
+                      ? (<BatteryCharging20Icon sx={{ fontSize: 16 }} className={classes.error} />)
+                      : (<Battery20Icon sx={{ fontSize: 16 }} className={classes.error} />)
+                  )}
+                </Box>
+              </Tooltip>
             )}
           </Box>
         </Box>

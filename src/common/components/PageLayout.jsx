@@ -102,7 +102,7 @@ const PageTitle = ({ breadcrumbs }) => {
   );
 };
 
-const PageLayout = ({ menu, toolbar, stats, breadcrumbs, children }) => {
+const PageLayout = ({ menu, toolbar, stats, breadcrumbs, onScroll, children }) => {
   const [miniVariant, setMiniVariant] = useState(false);
   const { classes } = useStyles({ miniVariant });
   const theme = useTheme();
@@ -163,7 +163,7 @@ const PageLayout = ({ menu, toolbar, stats, breadcrumbs, children }) => {
       <div className={classes.content}>
         {stats && <div style={{ padding: theme.spacing(2, 3, 0, 3) }}>{stats}</div>}
         {toolbar && <div className={classes.toolbar}>{toolbar}</div>}
-        <div className={classes.scrollingContent}>
+        <div className={classes.scrollingContent} onScroll={onScroll}>
           {children}
         </div>
       </div>

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/resources/images/background",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1770914610435,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1770914668736,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,5 +6,9 @@\n   </defs>\n \n   <circle cx=\"5\" cy=\"50%\" r=\"4\"\n       style=\"fill:white; filter:url(#shadow);\"/>\n-</svg> -->\n\\ No newline at end of file\n+</svg> -->\n+\n+<svg width=\"144px\" height=\"144px\" viewBox=\"0 0 10 10\" xmlns=\"http://www.w3.org/2000/svg\">\n+  <circle cx=\"5\" cy=\"5\" r=\"4\" fill=\"white\" stroke=\"black\" stroke-width=\"0.1\"/>\n+</svg>\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1770914610435,
+            "name": "Commit-0",
+            "content": "<!-- <svg width=\"144px\" height=\"144px\" viewBox=\"0 0 10 10\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <filter id=\"shadow\">\n      <feDropShadow dx=\"0\" dy=\"0.1\" stdDeviation=\"0.3\" flood-color=\"grey\"/>\n    </filter>\n  </defs>\n\n  <circle cx=\"5\" cy=\"50%\" r=\"4\"\n      style=\"fill:white; filter:url(#shadow);\"/>\n</svg> -->"
+        }
+    ]
+}

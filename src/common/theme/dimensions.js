@@ -9,7 +9,7 @@ export default {
   bottomBarHeight: 56,
   popupMapOffset: 300,
   popupMaxWidth: 288,
-  popupImageHeight: 144,
+  popupImageHeight: 70,
   cardContentMaxHeight: '40vh',
   qrCodeSize: 192,
 };

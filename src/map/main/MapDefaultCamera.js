@@ -21,7 +21,7 @@ const MapDefaultCamera = ({ mapReady }) => {
       if (position) {
         map.jumpTo({
           center: [position.longitude, position.latitude],
-          zoom: Math.max(defaultZoom > 0 ? defaultZoom : map.getZoom(), 10),
+          zoom: Math.max(defaultZoom > 0 ? defaultZoom : map.getZoom(), 16), // Changed from 10 to 16 for closer zoom (approx 100m view)
         });
         setInitialized(true);
       }
@@ -46,7 +46,7 @@ const MapDefaultCamera = ({ mapReady }) => {
           const [individual] = coordinates;
           map.jumpTo({
             center: individual,
-            zoom: Math.max(defaultZoom > 0 ? defaultZoom : map.getZoom(), 10),
+            zoom: Math.max(defaultZoom > 0 ? defaultZoom : map.getZoom(), 16), // Changed from 10 to 16 for closer zoom (approx 100m view)
           });
           setInitialized(true);
         }

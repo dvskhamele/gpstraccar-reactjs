@@ -40,7 +40,25 @@ const PreferencesPage = () => {
   const readonly = useRestriction('readonly');
 
   const user = useSelector((state) => state.session.user);
-  const [attributes, setAttributes] = useState(user.attributes);
+  const [attributes, setAttributes] = useState(() => {
+    const initialAttributes = user.attributes || {};
+    let currentPositionItems = initialAttributes.positionItems || '';
+
+    const itemsToRemove = ['altitude', 'latitude', 'longitude', 'serverTime'];
+
+    currentPositionItems = currentPositionItems.split(',')
+      .filter(item => item && !itemsToRemove.includes(item))
+      .join(',');
+
+    if (!currentPositionItems) {
+      currentPositionItems = 'fixTime,address,speed,totalDistance,course,batteryLevel,ignition,motion,odometer,deviceTime,geofenceIds,sat,rssi,fuel,charge,operator,alarm,status,protocol';
+    }
+
+    return {
+      ...initialAttributes,
+      positionItems: currentPositionItems,
+    };
+  });
 
   const versionApp = import.meta.env.VITE_APP_VERSION;
   const versionServer = useSelector((state) => state.session.server.version);
@@ -101,7 +119,7 @@ const PreferencesPage = () => {
                   <InputLabel>{t('mapActive')}</InputLabel>
                   <Select
                     label={t('mapActive')}
-                    value={attributes.activeMapStyles?.split(',') || ['locationIqStreets', 'locationIqDark', 'openFreeMap']}
+                    value={attributes.activeMapStyles?.split(',') || ['googleRoad', 'googleSatellite', 'googleHybrid']}
                     onChange={(e, child) => {
                       const clicked = mapStyles.find((s) => s.id === child.props.value);
                       if (clicked.available) {
@@ -153,7 +171,7 @@ const PreferencesPage = () => {
                     }
                     return positionAttributes[option]?.name || option;
                   }}
-                  value={attributes.positionItems?.split(',') || ['fixTime', 'address', 'speed', 'totalDistance']}
+                  value={attributes.positionItems?.split(',')}
                   onChange={(_, newValue) => {
                     setAttributes({ ...attributes, positionItems: newValue.map((x) => (typeof x === 'string' ? x : x.inputValue)).join(','), });
                   }}
@@ -185,7 +203,7 @@ const PreferencesPage = () => {
                   <InputLabel>{t('mapDirection')}</InputLabel>
                   <Select
                     label={t('mapDirection')}
-                    value={attributes.mapDirection || 'selected'}
+                    value={attributes.mapDirection || 'all'}
                     onChange={(e) => setAttributes({ ...attributes, mapDirection: e.target.value })}
                   >
                     <MenuItem value="none">{t('sharedDisabled')}</MenuItem>
@@ -206,7 +224,7 @@ const PreferencesPage = () => {
                   <FormControlLabel
                     control={(
                       <Checkbox
-                        checked={attributes.hasOwnProperty('mapFollow') ? attributes.mapFollow : false}
+                        checked={attributes.hasOwnProperty('mapFollow') ? attributes.mapFollow : true}
                         onChange={(e) => setAttributes({ ...attributes, mapFollow: e.target.checked })}
                       />
                     )}

@@ -1,0 +1,22 @@
+<svg width="500" height="600" viewBox="0 0 500 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bottomGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#F9802D" />
+      <stop offset="100%" stop-color="#E12A31" />
+    </linearGradient>
+    <linearGradient id="topGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#D91E76" />
+      <stop offset="100%" stop-color="#5B247A" />
+    </linearGradient>
+    <linearGradient id="circleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#46C6F2" />
+      <stop offset="100%" stop-color="#008CC9" />
+    </linearGradient>
+  </defs>
+
+  <path d="M40 540 L250 220 L460 540 L250 430 Z" fill="url(#bottomGrad)" stroke-linejoin="round" />
+  
+  <path d="M165 190 L250 25 L335 190 L250 145 Z" fill="url(#topGrad)" stroke-linejoin="round" />
+
+  <circle cx="250" cy="210" r="28" fill="url(#circleGrad)" />
+</svg>

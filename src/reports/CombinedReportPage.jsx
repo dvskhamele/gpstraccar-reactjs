@@ -81,6 +81,7 @@ const CombinedReportPage = () => {
             <TableHead>
               <TableRow>
                 <TableCell>{t('sharedDevice')}</TableCell>
+                <TableCell>Vehicle Number</TableCell>
                 <TableCell>{t('positionFixTime')}</TableCell>
                 <TableCell>{t('sharedType')}</TableCell>
               </TableRow>
@@ -89,10 +90,11 @@ const CombinedReportPage = () => {
               {!loading ? items.flatMap((item) => item.events.map((event, index) => (
                 <TableRow key={event.id}>
                   <TableCell>{index ? '' : devices[item.deviceId].name}</TableCell>
+                  <TableCell>{index ? '' : devices[item.deviceId].vehicle_number}</TableCell>
                   <TableCell>{formatTime(event.eventTime, 'seconds')}</TableCell>
                   <TableCell>{t(prefixString('event', event.type))}</TableCell>
                 </TableRow>
-              ))) : (<TableShimmer columns={3} />)}
+              ))) : (<TableShimmer columns={4} />)}
             </TableBody>
           </Table>
         </div>

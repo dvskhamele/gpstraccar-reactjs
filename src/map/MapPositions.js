@@ -22,27 +22,15 @@ const MapPositions = ({ positions, onMapClick, onMarkerClick, showStatus, select
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
 
   const mapCluster = useAttributePreference('mapCluster', true);
-  const directionType = useAttributePreference('mapDirection', 'selected');
 
-  const createFeature = (devices, position, selectedPositionId) => {
+  const createFeature = (devices, position) => {
     const device = devices[position.deviceId];
-    let showDirection;
-    switch (directionType) {
-      case 'none':
-        showDirection = false;
-        break;
-      case 'all':
-        showDirection = position.course > 0;
-        break;
-      default:
-        showDirection = selectedPositionId === position.id && position.course > 0;
-        break;
-    }
+    const showDirection = device.status === 'online';
+
     return {
       id: position.id,
       deviceId: position.deviceId,
       name: device.name,
-      label: (device.vehicle_number || device.name).toUpperCase(),
       fixTime: formatTime(position.fixTime, 'seconds'),
       category: mapIconKey(device.category),
       color: showStatus ? position.attributes.color || getStatusColor(device.status) : 'neutral',
@@ -113,27 +101,6 @@ const MapPositions = ({ positions, onMapClick, onMarkerClick, showStatus, select
         },
       });
       map.addLayer({
-        id: `plate-${source}`,
-        type: 'symbol',
-        source,
-        filter: ['!has', 'point_count'],
-        layout: {
-          'icon-image': 'plate',
-          'text-field': `{${titleField || 'label'}}`,
-          'text-allow-overlap': true,
-          'text-anchor': 'top',
-          'text-offset': [0, 7 * iconScale],
-          'text-font': findFonts(map),
-          'text-size': 9,
-          'icon-text-fit': 'both',
-          'icon-text-fit-padding': [0, 0, 0, 0],
-          'symbol-sort-key': ['get', 'id'],
-        },
-        paint: {
-          'text-color': '#000000',
-        },
-      });
-      map.addLayer({
         id: `direction-${source}`,
         type: 'symbol',
         source,
@@ -144,7 +111,7 @@ const MapPositions = ({ positions, onMapClick, onMarkerClick, showStatus, select
         ],
         layout: {
           'icon-image': 'direction',
-          'icon-size': iconScale,
+          'icon-size': iconScale * 1.5,
           'icon-allow-overlap': true,
           'icon-rotate': ['get', 'rotation'],
           'icon-rotation-alignment': 'map',
@@ -154,9 +121,6 @@ const MapPositions = ({ positions, onMapClick, onMarkerClick, showStatus, select
       map.on('mouseenter', source, onMouseEnter);
       map.on('mouseleave', source, onMouseLeave);
       map.on('click', source, onMarkerClickCallback);
-      map.on('mouseenter', `plate-${source}`, onMouseEnter);
-      map.on('mouseleave', `plate-${source}`, onMouseLeave);
-      map.on('click', `plate-${source}`, onMarkerClickCallback);
     });
     map.addLayer({
       id: clusters,
@@ -191,15 +155,9 @@ const MapPositions = ({ positions, onMapClick, onMarkerClick, showStatus, select
         map.off('mouseenter', source, onMouseEnter);
         map.off('mouseleave', source, onMouseLeave);
         map.off('click', source, onMarkerClickCallback);
-        map.off('mouseenter', `plate-${source}`, onMouseEnter);
-        map.off('mouseleave', `plate-${source}`, onMouseLeave);
-        map.off('click', `plate-${source}`, onMarkerClickCallback);
 
         if (map.getLayer(source)) {
           map.removeLayer(source);
-        }
-        if (map.getLayer(`plate-${source}`)) {
-          map.removeLayer(`plate-${source}`);
         }
         if (map.getLayer(`direction-${source}`)) {
           map.removeLayer(`direction-${source}`);
@@ -223,7 +181,7 @@ const MapPositions = ({ positions, onMapClick, onMarkerClick, showStatus, select
               type: 'Point',
               coordinates: [position.longitude, position.latitude],
             },
-            properties: createFeature(devices, position, selectedPosition && selectedPosition.id),
+            properties: createFeature(devices, position),
           })),
       });
     });
