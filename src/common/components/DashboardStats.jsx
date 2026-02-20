@@ -42,8 +42,8 @@ const DashboardCard = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: isDesktop ? '16px !important' : '8px !important',
-        gap: isDesktop ? 2 : 0.5,
+        padding: isDesktop ? '8px 12px !important' : '4px 8px !important',
+        gap: isDesktop ? 1.5 : 0.5,
       }}
       >
         <Box sx={{
@@ -51,8 +51,8 @@ const DashboardCard = ({
           alignItems: 'center',
           justifyContent: 'center',
           background: 'rgba(255, 255, 255, 0.25)',
-          borderRadius: 3,
-          padding: isDesktop ? '10px' : '6px', // Responsive padding for icon container
+          borderRadius: 2.5,
+          padding: isDesktop ? '6px' : '4px', // Responsive padding for icon container
         }}
         >
           {icon}
@@ -63,10 +63,10 @@ const DashboardCard = ({
           textAlign: 'center',
         }}
         >
-          <Typography variant="h4" fontWeight="800" sx={{ lineHeight: 1, mb: 0.5, fontSize: isDesktop ? '2.125rem' : '1rem' }}>
+          <Typography variant="h4" fontWeight="800" sx={{ lineHeight: 1, mb: 0.2, fontSize: isDesktop ? '1.75rem' : '0.9rem' }}>
             {count}
           </Typography>
-          <Typography variant="caption" sx={{ opacity: 0.9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', fontSize: isDesktop ? '0.65rem' : '0.55rem' }}>
+          <Typography variant="caption" sx={{ opacity: 0.9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: isDesktop ? '0.6rem' : '0.5rem' }}>
             {title}
           </Typography>
         </Box>
