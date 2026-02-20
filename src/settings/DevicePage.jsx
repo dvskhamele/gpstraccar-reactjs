@@ -496,7 +496,7 @@ const DevicePage = () => {
                     margin="normal"
                   />
                   <TextField
-                    label="Fuel Consumption (L/100km)"
+                    label="Vehicle Mileage (km/L)"
                     type="number"
                     value={item.attributes?.fuelConsumption || ''}
                     onChange={(event) => {
