@@ -22,6 +22,8 @@ const SocketController = () => {
 
   const authenticated = useSelector((state) => Boolean(state.session.user));
   const includeLogs = useSelector((state) => state.session.includeLogs);
+  const devices = useSelector((state) => state.devices.items);
+  const positions = useSelector((state) => state.session.positions);
 
   const socketRef = useRef();
   const reconnectTimeoutRef = useRef();
@@ -48,12 +50,23 @@ const SocketController = () => {
         || (e.type === 'alarm' && soundAlarms.includes(e.attributes.alarm)))) {
       new Audio(alarm).play();
     }
-    setNotifications(events.map((event) => ({
-      id: event.id,
-      message: event.attributes.message,
-      show: true,
-    })));
-  }, [features, dispatch, soundEvents, soundAlarms]);
+    setNotifications(events.map((event) => {
+      const device = devices[event.deviceId];
+      const position = positions[event.deviceId];
+      let message = event.attributes.message;
+      if (device) {
+        message = `${device.vehicle_number || device.name}: ${message}`;
+      }
+      if (position && position.address) {
+        message = `${message} at ${position.address}`;
+      }
+      return {
+        id: event.id,
+        message,
+        show: true,
+      };
+    }));
+  }, [features, dispatch, soundEvents, soundAlarms, devices, positions]);
 
   const connectSocket = () => {
     clearReconnectTimeout();

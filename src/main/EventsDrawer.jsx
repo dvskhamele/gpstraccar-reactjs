@@ -29,6 +29,7 @@ const EventsDrawer = ({ open, onClose }) => {
   const t = useTranslation();
 
   const devices = useSelector((state) => state.devices.items);
+  const positions = useSelector((state) => state.session.positions);
 
   const events = useSelector((state) => state.events.items);
 
@@ -61,8 +62,19 @@ const EventsDrawer = ({ open, onClose }) => {
             disabled={!event.id}
           >
             <ListItemText
-              primary={`${devices[event.deviceId]?.name} • ${formatType(event)}`}
-              secondary={formatTime(event.eventTime, 'seconds')}
+              primary={`${devices[event.deviceId]?.vehicle_number || devices[event.deviceId]?.name} • ${formatType(event)}`}
+              secondary={(
+                <>
+                  <Typography variant="caption" component="block" color="text.secondary">
+                    {formatTime(event.eventTime, 'seconds')}
+                  </Typography>
+                  {positions[event.deviceId]?.address && (
+                    <Typography variant="caption" component="block" color="text.primary" sx={{ mt: 0.5, fontStyle: 'italic' }}>
+                      {positions[event.deviceId].address}
+                    </Typography>
+                  )}
+                </>
+              )}
             />
             <IconButton
               size="small"
