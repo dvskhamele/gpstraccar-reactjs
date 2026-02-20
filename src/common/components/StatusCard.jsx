@@ -717,7 +717,7 @@ const StatusCard = ({
                       <AddressValue
                         latitude={position?.latitude}
                         longitude={position?.longitude}
-                        originalAddress={null}
+                        originalAddress={position?.address}
                       />
                     </Typography>
                   </div>

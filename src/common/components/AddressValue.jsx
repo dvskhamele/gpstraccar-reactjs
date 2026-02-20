@@ -14,19 +14,37 @@ const AddressValue = ({ latitude, longitude, originalAddress }) => {
 
   useEffect(() => {
     if (addressEnabled && latitude && longitude) {
-      setAddress(null); // Clear previous address to force new fetch
-      const fetchAddress = async () => {
-        try {
-          const query = new URLSearchParams({ latitude, longitude });
-          const response = await fetchOrThrow(`/api/server/geocode?${query.toString()}`);
-          setAddress(await response.text());
-        } catch (error) {
-          // ignore errors
-        }
-      };
-      fetchAddress();
+      if (!originalAddress) {
+        const fetchAddress = async () => {
+          try {
+            // Using Nominatim directly for a much more detailed address
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`);
+            const data = await response.json();
+            if (data && data.display_name) {
+              setAddress(data.display_name);
+            } else {
+              // Fallback to backend geocode if Nominatim fails
+              const query = new URLSearchParams({ latitude, longitude });
+              const backendResponse = await fetchOrThrow(`/api/server/geocode?${query.toString()}`);
+              setAddress(await backendResponse.text());
+            }
+          } catch (error) {
+            // Final fallback to backend
+            try {
+              const query = new URLSearchParams({ latitude, longitude });
+              const backendResponse = await fetchOrThrow(`/api/server/geocode?${query.toString()}`);
+              setAddress(await backendResponse.text());
+            } catch (e) {
+              setAddress('Unknown Location');
+            }
+          }
+        };
+        fetchAddress();
+      } else {
+        setAddress(originalAddress);
+      }
     } else {
-      setAddress(originalAddress); // If geocoding disabled or coordinates missing, use original (now null)
+      setAddress(originalAddress || 'Geocoding Disabled');
     }
   }, [addressEnabled, latitude, longitude, originalAddress]);
 
