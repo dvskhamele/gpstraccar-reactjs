@@ -17,6 +17,7 @@ import MapOverlay from '../map/overlay/MapOverlay';
 import MapGeocoder from '../map/geocoder/MapGeocoder';
 import MapScale from '../map/MapScale';
 import MapNotification from '../map/notification/MapNotification';
+import MapTodayRoute from '../map/main/MapTodayRoute.jsx';
 import useFeatures from '../common/util/useFeatures';
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
@@ -49,6 +50,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         <MapDefaultCamera />
         <MapSelectedDevice />
         <PoiMap />
+        <MapTodayRoute />
       </MapView>
       <MapScale />
       <MapCurrentLocation />

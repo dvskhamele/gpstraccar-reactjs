@@ -28,7 +28,7 @@ const canvasTintImage = (image, color) => {
   return canvas;
 };
 
-export const prepareIcon = (background, icon, color) => {
+export const prepareIcon = (background, icon, color, iconColor) => {
   const canvas = document.createElement('canvas');
   canvas.width = background.width * devicePixelRatio;
   canvas.height = background.height * devicePixelRatio;
@@ -58,7 +58,11 @@ export const prepareIcon = (background, icon, color) => {
       drawWidth = targetHeight * iconAspectRatio;
     }
 
-    context.drawImage(icon, (canvas.width - drawWidth) / 2, (canvas.height - drawHeight) / 2, drawWidth, drawHeight);
+    if (iconColor) {
+      context.drawImage(canvasTintImage(icon, iconColor), (canvas.width - drawWidth) / 2, (canvas.height - drawHeight) / 2, drawWidth, drawHeight);
+    } else {
+      context.drawImage(icon, (canvas.width - drawWidth) / 2, (canvas.height - drawHeight) / 2, drawWidth, drawHeight);
+    }
   }
 
   return context.getImageData(0, 0, canvas.width, canvas.height);

@@ -6,6 +6,10 @@ import directionSvg from '../../resources/images/direction.svg';
 import backgroundSvg from '../../resources/images/background.svg';
 import plateSvg from '../../resources/images/plate.svg';
 
+import startpointSvg from '../../resources/images/startpoint.svg';
+import endpointSvg from '../../resources/images/endpoint.svg';
+import parkingiconSvg from '../../resources/images/parkingicon.svg';
+
 import startSvg from '../../resources/images/icon/start.svg';
 import finishSvg from '../../resources/images/icon/finish.svg';
 import defaultSvg from '../../resources/images/icon/default.svg';
@@ -122,12 +126,17 @@ export const mapImages = {};
 const theme = createTheme({
   palette: {
     neutral: { main: grey[500] },
+    white: { main: '#ffffff' },
   },
 });
 
 export default async () => {
   const background = await loadImage(backgroundSvg);
   mapImages.background = await prepareIcon(background);
+
+  mapImages.startpoint = await loadImage(startpointSvg);
+  mapImages.endpoint = await loadImage(endpointSvg);
+  mapImages.parkingicon = await loadImage(parkingiconSvg);
 
   const directionImage = await loadImage(directionSvg);
   const canvas = document.createElement('canvas');
@@ -144,9 +153,10 @@ export default async () => {
   mapImages.plate = await prepareIcon(await loadImage(plateSvg));
   await Promise.all(Object.keys(mapIcons).map(async (category) => {
     const results = [];
-    ['info', 'success', 'error', 'neutral'].forEach((color) => {
+    ['info', 'success', 'error', 'neutral', 'white'].forEach((color) => {
       results.push(loadImage(mapIcons[category]).then((icon) => {
-        mapImages[`${category}-${color}`] = prepareIcon(background, icon, theme.palette[color].main);
+        const iconColor = ['start', 'finish', 'default'].includes(category) ? '#ffffff' : null;
+        mapImages[`${category}-${color}`] = prepareIcon(background, icon, theme.palette[color].main, iconColor);
       }));
     });
     await Promise.all(results);
